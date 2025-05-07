@@ -65,7 +65,9 @@ users are asked to use Windows Subsystem for Linux (WSL) to use our software.
 For running this software on a Linux-like system, you can run
 
     ```bash
+
     pip install tracktorlive
+
     ```
 
 For usage in other platforms, see [DOCS.md](./DOCS.md).

@@ -21,6 +21,8 @@
 - [Learning more](#learning-more)
 
 
+--------------------------------------------
+
 ## Overview
 
 TracktorLive is a lightweight, real-time tracking and data streaming framework
@@ -51,6 +53,11 @@ custom log files, or launch other local processes.
 You can use TracktorLive entirely through helper functions and decorators
 without worrying about the internals of the multiprocessing and tracking setup.
 The end-user can rely on the TracktorLive internals for all that.
+
+
+--------------------------------------------
+
+
 
 ## Quickstart
 
@@ -115,6 +122,9 @@ This means:
 These shapes are explained in detail in the [Core Concepts] section.
 
 
+--------------------------------------------
+
+
 ## Installation
 
 TracktorLive will soon be installable via pip and brings in all Python
@@ -153,6 +163,19 @@ Below are platform-specific setup instructions.
 
 (you might need to use `python3` instead of `python` based on your installation.
 
+**Note:** If you get an error complaining of an 'externally managed
+environment', you should try to set up a `venv` environment to handle the
+installation. Another, slightly riskier workaround is to install with the
+break system packages flag:
+
+    ```bash
+    python -m pip install tracktorlive --break-system-packages
+    ```
+
+Needless to say, with this option you run the risk of breaking your system
+packages. However, it has worked flawlessly so far on both normal Linux and WSL
+installs.
+
 ### 🍎 macOS
 
 1. Install Homebrew (if not already installed):
@@ -173,6 +196,9 @@ Below are platform-specific setup instructions.
     ```bash
     pip3 install tracktorlive
     ```
+
+
+
 
 
 ### 🪟 Windows (via WSL)
@@ -206,11 +232,14 @@ Below are platform-specific setup instructions.
     to enter your Linux home directory.
 
 4. To get access to GUI functionality on WSL, e.g., for fixing parameter values,
+    and to fully update the virtual linux system,
     run the following commands within WSL.
 
     ```bash
-    sudo apt install vlc
-    sudo apt install python3-pyqt5 python3-opencv libxcb-xinerama0
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install vlc -y
+    sudo apt install python3-pyqt5 python3-opencv libxcb-xinerama0 -y
     ```
 
     **Note**: The GUI might not work on outdated versions of WSL.
@@ -218,6 +247,10 @@ Below are platform-specific setup instructions.
 5. Follow Linux instructions (above) for further proceedings.
 
 6. Run all TracktorLive scripts within WSL.
+
+
+--------------------------------------------
+
 
 ## CLI usage
 
@@ -255,6 +288,9 @@ connected, in your terminal, you can use:
     a `--feed-id <a-unique-identifier>` and `--numtrack <how-many-individuals>` arguments to
     customise tracking. The server's feed is displayed, and can be used in any
     client-program you wish to write.
+
+
+--------------------------------------------
 
 
 ## Core concepts

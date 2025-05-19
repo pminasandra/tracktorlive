@@ -45,9 +45,7 @@ def run_track(args):
         print("Error: Please specify either --camera or --file", file=sys.stderr)
         sys.exit(1)
 
-    write_recordings = False
-    if args.write_rec is not None:
-        write_recordings = True
+    write_recordings = args.write_rec
 
     if "fps" not in params:
         print("Error: 'fps' must be included in the parameter file", file=sys.stderr)
@@ -67,17 +65,21 @@ def run_track(args):
         write_recordings=write_recordings
     )
 
-    if args.show_display is not None:
+    if args.show_display:#Should real time tracking be shown?
         import cv2
         wname = f"Tracking for {server.feed_id}"
         @server.startfunc
         def showsetup(server):
+            server.draw = True
             server.show_flag = True
-            cv2.named_window(wname, cv2.WINDOW_NORMAL)
+            cv2.namedWindow(wname, cv2.WINDOW_NORMAL)
 
         @server
         def show(server):
             if server.show_flag:
+                frame = server.framesbuffer[-1]
+                if frame is None:
+                    return
                 cv2.imshow(wname, server.framesbuffer[-1])
                 key = cv2.waitKey(1)
 

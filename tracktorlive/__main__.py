@@ -45,6 +45,10 @@ def run_track(args):
         print("Error: Please specify either --camera or --file", file=sys.stderr)
         sys.exit(1)
 
+    write_recordings = False
+    if args.write_rec is not None:
+        write_recordings = True
+
     if "fps" not in params:
         print("Error: 'fps' must be included in the parameter file", file=sys.stderr)
         sys.exit(1)
@@ -59,8 +63,32 @@ def run_track(args):
         params=params,
         n_ind=n_ind,
         feed_id=args.feed_id,
-        realtime=realtime
+        realtime=realtime,
+        write_recordings=write_recordings
     )
+
+    if args.show_display is not None:
+        import cv2
+        wname = f"Tracking for {server.feed_id}"
+        @server.startfunc
+        def showsetup(server):
+            server.show_flag = True
+            cv2.named_window(wname, cv2.WINDOW_NORMAL)
+
+        @server
+        def show(server):
+            if server.show_flag:
+                cv2.imshow(wname, server.framesbuffer[-1])
+                key = cv2.waitKey(1)
+
+                if key==27 or key==ord('q'):
+                    server.show_flag = False
+                    cv2.destroyWindow(wname)
+        
+        @server.stopfunc
+        def showcleanup(server):
+            if server.show_flag:
+                cv2.destroyWindow(wname)
 
     print(f"Tracking initiated at feed_id: {server.feed_id}")
     trl.run_trsession(server, semm)
@@ -123,6 +151,8 @@ def main():
     track_parser.add_argument("--file", "-f", help="Video file path")
     track_parser.add_argument("--feed-id", "-I", help="Feed ID", default=None)
     track_parser.add_argument("--numtrack", "-n", help="Number of recorded individuals.", default=1, type=int)
+    track_parser.add_argument("--write-rec", "-w", help="Whether tracking should be output to a csv file", action='store_true')
+    track_parser.add_argument("--show-display", "-s", help="Whether tracking should be displayed", action='store_true')
 
     # Clear subcommand
     clear_parser = subparsers.add_parser("clear", help="Remove all feed/client files")

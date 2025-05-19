@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tracktorlive"
-version = "0.1.0"
+version = "0.9.0"
 description = "Real-time low-cost animal tracking and response delivery."
 authors = [{name = "Dominique Roche, Isaac Planas-Sitjà, Pranav Minasandra, Vivek H Sridhar"}]#FIXME
 readme = "README.md"

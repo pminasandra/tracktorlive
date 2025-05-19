@@ -130,7 +130,10 @@ These shapes are explained in detail in the [Core Concepts] section.
 TracktorLive will soon be installable via pip and brings in all Python
 dependencies automatically. However, you’ll need some basic system tools (like
 compilers and build tools) installed to support underlying libraries such as
-OpenCV.
+OpenCV. 
+
+**Note:** If you're looking to contribute as a developer for this software,
+please instead see the installation instructions [here](./DEV.md)
 
 Below are platform-specific setup instructions.
 

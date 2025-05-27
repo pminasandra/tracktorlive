@@ -31,8 +31,17 @@ def parse_arguments():
                         help='Maximum value for min blob size trackbar')
     parser.add_argument('--max-blob-size-max', type=int, default=50000,
                         help='Maximum value for max blob size trackbar')
+    parser.add_argument('--config', type=str, default=None,
+                        help='Path to JSON config file with default parameters')
 
     return parser.parse_args()
+
+
+def load_config(config_path):
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    with open(config_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 
 def process_image(image, block_size, offset, min_blob_size, max_blob_size, img_invert):
@@ -110,6 +119,7 @@ def gui_set_params(cap,
                     offset_max=100,
                     min_blob_size_max=5000,
                     max_blob_size_max=50000,
+                    initial_config=None,
                     write_file=None):
     """
     Main function to handle GUI threshold tuning and contour display.
@@ -117,12 +127,13 @@ def gui_set_params(cap,
     if not cap.isOpened():
         raise IOError("Failed to open video source.")
 
-    # Initial parameter values
-    initial_block_size = 51
-    initial_offset = 0
-    initial_min_blob_size = 500
-    initial_max_blob_size = 5000
-    initial_img_invert = 1
+    # Initial parameters, with fallback if config is missing any keys
+    initial_block_size = initial_config.get("block_size", 51)
+    initial_offset = initial_config.get("offset", 0)
+    initial_min_blob_size = initial_config.get("min_area", 500)
+    initial_max_blob_size = initial_config.get("max_area", 5000)
+    initial_img_invert = initial_config.get("invert", 1)
+
     
     is_paused = False
     frame_index = 0
@@ -202,22 +213,23 @@ def main():
     if not args.file and not args.camera:
         raise SyntaxError("You must specify a video file (-f) or camera (-c).")
 
-    # Initialize video capture from file or camera
-    if args.file:
-        cap = tru.get_vid(args.file)
-    else:
-        cap = tru.get_vid(int(args.camera))
+    configdict = {}
+    if args.config:
+        configdict = load_config(args.config)
 
-    vidtype = "cam"
-    if args.file:
-        vidtype = "file"
-    configdict = gui_set_params(cap=cap,
-                    vidtype=vidtype,
-                    block_size_max=args.block_size_max,
-                    offset_max=args.offset_max,
-                    min_blob_size_max=args.min_blob_size_max,
-                    max_blob_size_max=args.max_blob_size_max,
-                    write_file=True)
+    # Initialize video capture
+    cap = tru.get_vid(args.file if args.file else int(args.camera))
+    vidtype = "file" if args.file else "cam"
+
+    updated_config = gui_set_params(cap=cap,
+                                    vidtype=vidtype,
+                                    block_size_max=args.block_size_max,
+                                    offset_max=args.offset_max,
+                                    min_blob_size_max=args.min_blob_size_max,
+                                    max_blob_size_max=args.max_blob_size_max,
+                                    initial_config=configdict,
+                                    write_file=args.config  # Update same config if you want to overwrite it
+    )
 
     cap.release()
 

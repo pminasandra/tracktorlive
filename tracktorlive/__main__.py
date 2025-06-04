@@ -4,6 +4,7 @@
 import argparse
 import json
 import os
+import os.path
 import sys
 
 import tracktorlive as trl
@@ -23,8 +24,13 @@ def run_gui(args):
         print("Error: Please specify either --camera or --file", file=sys.stderr)
         sys.exit(1)
 
+    configdict = None
+    if args.out is not None:
+        if os.path.exists(args.out):
+            configdict=trl.paramfixing.load_config(args.out)
+
     cap = trl.trackutils.get_vid(cap)
-    params = trl.get_params_from_gui(cap, vidtype, write_file=args.out)
+    params = trl.get_params_from_gui(cap, vidtype, initial_config=configdict, write_file=args.out)
     cap.release()
 
     if args.out is None:

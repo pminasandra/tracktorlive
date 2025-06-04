@@ -3,5 +3,6 @@
     "offset": 25,
     "min_area": 500,
     "max_area": 5000,
-    "invert": 51
+    "invert": 1,
+    "fps": 50.0
 }

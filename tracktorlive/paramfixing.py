@@ -128,11 +128,18 @@ def gui_set_params(cap,
         raise IOError("Failed to open video source.")
 
     # Initial parameters, with fallback if config is missing any keys
-    initial_block_size = initial_config.get("block_size", 51)
-    initial_offset = initial_config.get("offset", 0)
-    initial_min_blob_size = initial_config.get("min_area", 500)
-    initial_max_blob_size = initial_config.get("max_area", 5000)
-    initial_img_invert = initial_config.get("invert", 1)
+    if initial_config is None:
+        initial_block_size = 51
+        initial_offset = 0
+        initial_min_blob_size = 500
+        initial_max_blob_size = 5000
+        initial_img_invert = 1
+    else:
+        initial_block_size = initial_config.get("block_size", 51)
+        initial_offset = initial_config.get("offset", 0)
+        initial_min_blob_size = initial_config.get("min_area", 500)
+        initial_max_blob_size = initial_config.get("max_area", 5000)
+        initial_img_invert = initial_config.get("invert", 1)
 
     
     is_paused = False

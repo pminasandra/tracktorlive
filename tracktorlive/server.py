@@ -25,6 +25,7 @@ import numpy as np
 
 import tracktorlive
 from . import client
+from . import config
 from . import memorymanagement as mmg
 from . import paramfixing
 from . import sync

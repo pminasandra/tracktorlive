@@ -12,6 +12,7 @@ from os.path import join as joinpath
 import cv2
 import numpy as np
 
+from . import config
 from . import tracktor as tr
 
 class VideoEndedError(IOError):
@@ -32,6 +33,8 @@ def get_vid(source):
     cap = cv2.VideoCapture(source)
     assert cap.isOpened(), f"could not access source {vidtype}: {source}."
 
+    codec = config.settings['fourcc_read_codec']
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*codec))
     return cap
 
 def get_frame(cap):

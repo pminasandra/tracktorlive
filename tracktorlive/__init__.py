@@ -9,6 +9,7 @@ import platformdirs as pfd
 from .server import TracktorServer, spawn_trserver, run_trserver, close_trserver, wait_and_close_trserver, run_trsession
 from .client import TracktorClient, spawn_trclient, run_trclient, close_trclient, wait_and_close_trclient, list_feeds
 from .paramfixing import gui_set_params as get_params_from_gui
+from . import config
 
 __version__ = "0.1.0"
 __author__ = "All the authors here" #FIXME
@@ -35,3 +36,12 @@ os.makedirs(FEEDS_DIR, exist_ok=True)
 os.makedirs(CLIENTS_DIR, exist_ok=True)
 #Miscellaneous
 SUPPRESS_INFORMATIVE_PRINT = False
+
+## Last minute tweak to create an rc file when needed
+import json
+import pathlib
+config_file = pathlib.Path.home()/".trlrc"
+if not config_file.exists():
+    print("rc file could not be found. This may happen if it is your first time running tracktorlive. Creating one for you at", str(config_file))
+    with open(config_file, "w") as f:
+        json.dump(config.settings, f, indent=2)

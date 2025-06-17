@@ -34,6 +34,10 @@ sudo usermod -aG <groupname> <username>
 where `<groupname>` is `video` or `dialout` as mentioned above, and `<username>`
 is your WSL username.
 
+Then exit WSL by typing the command `exit`, and then shutdown the running
+virtual linux machine by typing the command `wsl --shutdown` in the Windows
+Powershell. Re-enter WSL with the command `wsl`.
+
 ## 3. Webcam configuration.
 
 Run `tracktorlive gui --camera 0`. If a window opens but fails to show any

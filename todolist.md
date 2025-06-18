@@ -20,3 +20,7 @@
 - [ ] video file-format and codec handling in write_video and dumpvideo
 - [x] handle invert variable value (defaults to 51)
 - [x] paramfixing using trackutils instead of cv2 functions
+- [ ] use file_format from trlrc
+- [ ] add a tr_input_frame that eats all the video edits, while track data is
+  drawn on current_frame
+- [ ] add proper TROUBLESHOOTING.md

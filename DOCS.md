@@ -172,7 +172,9 @@ installation. Another, slightly riskier workaround is to install with the
 break system packages flag:
 
     ```bash
+
     python -m pip install tracktorlive --break-system-packages
+
     ```
 
 Needless to say, with this option you run the risk of breaking your system
@@ -275,7 +277,7 @@ connected, in your terminal, you can use:
     tracktorlive gui --file /path/to/file
     ```
 
-    The `tracktorlive gui` command also has an `--output /path/to/outfile.json`
+    The `tracktorlive gui` command also has an `--out /path/to/outfile.json`
     argument, by which you can directly store the output of the GUI parameter fixing
     method into a .json file. These files are important for launching servers.
 

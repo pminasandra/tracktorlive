@@ -52,6 +52,7 @@ def run_track(args):
         sys.exit(1)
 
     write_recordings = args.write_rec
+    write_video = args.write_vid
 
     if "fps" not in params:
         print("Error: 'fps' must be included in the parameter file", file=sys.stderr)
@@ -68,6 +69,7 @@ def run_track(args):
         n_ind=n_ind,
         feed_id=args.feed_id,
         realtime=realtime,
+        write_video=write_video,
         write_recordings=write_recordings
     )
 
@@ -160,6 +162,7 @@ def main():
     track_parser.add_argument("--feed-id", "-I", help="Feed ID", default=None)
     track_parser.add_argument("--numtrack", "-n", help="Number of recorded individuals.", default=1, type=int)
     track_parser.add_argument("--write-rec", "-w", help="Whether tracking should be output to a csv file", action='store_true')
+    track_parser.add_argument("--write-vid", "-d", help="Whether video should be recorded to a file", action='store_true')
     track_parser.add_argument("--show-display", "-s", help="Whether tracking should be displayed", action='store_true')
 
     # Clear subcommand

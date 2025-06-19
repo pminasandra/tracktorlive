@@ -148,7 +148,7 @@ class TracktorServer:
             os.makedirs(self.feed_id, exist_ok=True)
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             self.vidout = cv2.VideoWriter(
-                                    filename=joinpath(self.feed_id, str(ulid.ULID())+'.avi'),
+                                    filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
                                     fourcc = fourcc,
                                     fps = cap_temp.get(cv2.CAP_PROP_FPS),
                                     frameSize = self.framesize,

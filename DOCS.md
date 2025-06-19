@@ -171,11 +171,9 @@ environment', you should try to set up a `venv` environment to handle the
 installation. Another, slightly riskier workaround is to install with the
 break system packages flag:
 
-    ```bash
-
-    python -m pip install tracktorlive --break-system-packages
-
-    ```
+```bash
+python -m pip install tracktorlive --break-system-packages
+```
 
 Needless to say, with this option you run the risk of breaking your system
 packages. However, it has worked flawlessly so far on both normal Linux and WSL

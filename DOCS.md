@@ -127,7 +127,7 @@ These shapes are explained in detail in the [Core Concepts] section.
 
 ## Installation
 
-TracktorLive will soon be installable via pip and brings in all Python
+TracktorLive is installable via pip and brings in all Python
 dependencies automatically. However, you’ll need some basic system tools (like
 compilers and build tools) installed to support underlying libraries such as
 OpenCV. 
@@ -164,7 +164,8 @@ Below are platform-specific setup instructions.
     python -m pip install tracktorlive
     ```
 
-(you might need to use `python3` instead of `python` based on your installation.
+(you might need to use `python3` instead of `python` based on your
+installation.)
 
 **Note:** If you get an error complaining of an 'externally managed
 environment', you should try to set up a `venv` environment to handle the

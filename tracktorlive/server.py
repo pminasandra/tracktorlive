@@ -39,6 +39,8 @@ SyncManager.register('get_semaphore')
 
 def _runforever(server):
     cap = trackutils.get_vid(server.vidinput)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, server.width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, server.height)
     t_init = time.time()
     databuffer, clockbuffer = server.setup_shared_arrays()
 
@@ -79,7 +81,9 @@ class TracktorServer:
                     realtime=True,
                     timeout=None,
                     write_recordings=False,
-                    write_video=False
+                    write_video=False,
+                    width=640,
+                    height=480
                 ):
         """
         Initializes the tracking server with video input, tracking parameters, and optional flags 
@@ -99,6 +103,8 @@ class TracktorServer:
         self.vidinput = vidinput
         self.write_recordings = mp.Value('b', write_recordings)
         self.write_video = mp.Value('b', write_video)
+        self.width = wdith
+        self.height = wdith
 
         if timeout is None:
             self.timeout = np.inf

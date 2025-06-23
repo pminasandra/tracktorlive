@@ -120,10 +120,15 @@ def gui_set_params(cap,
                     min_blob_size_max=5000,
                     max_blob_size_max=50000,
                     initial_config=None,
-                    write_file=None):
+                    write_file=None,
+                    width=640,
+                    height=480):
     """
     Main function to handle GUI threshold tuning and contour display.
     """
+
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
     if not cap.isOpened():
         raise IOError("Failed to open video source.")
 

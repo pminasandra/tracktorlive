@@ -5,9 +5,30 @@ import argparse
 import json
 import os
 import os.path
+import re
 import sys
 
 import tracktorlive as trl
+
+def parse_resolution(res_string):
+    """
+    Parses a resolution string of the form 'WIDTHxHEIGHT' or 'WIDTH×HEIGHT'.
+    
+    Parameters:
+    - res_string (str): The input resolution string, e.g., '1920x1080' or '1920×1080'.
+    
+    Returns:
+    - tuple: (width, height) as integers.
+    
+    Raises:
+    - ValueError: If the input format is invalid.
+    """
+    match = re.fullmatch(r"\s*(\d+)\s*[x×]\s*(\d+)\s*", res_string)
+    if not match:
+        raise ValueError(f"Invalid resolution format: '{res_string}'")
+    
+    width, height = map(int, match.groups())
+    return width, height
 
 
 def run_gui(args):
@@ -24,13 +45,18 @@ def run_gui(args):
         print("Error: Please specify either --camera or --file", file=sys.stderr)
         sys.exit(1)
 
+    if args.res is not None:
+        width, height = parse_resolution(args.res)
+    else:
+        width, height = 640, 480
+
     configdict = None
     if args.out is not None:
         if os.path.exists(args.out):
             configdict=trl.paramfixing.load_config(args.out)
 
     cap = trl.trackutils.get_vid(cap)
-    params = trl.get_params_from_gui(cap, vidtype, initial_config=configdict, write_file=args.out)
+    params = trl.get_params_from_gui(cap, vidtype, initial_config=configdict, write_file=args.out, width=width, height=height)
     cap.release()
 
     if args.out is None:
@@ -51,6 +77,11 @@ def run_track(args):
         print("Error: Please specify either --camera or --file", file=sys.stderr)
         sys.exit(1)
 
+    if args.res is not None:
+        width, height = parse_resolution(args.res)
+    else:
+        width, height = 640, 480
+
     write_recordings = args.write_rec
     write_video = args.write_vid
 
@@ -70,7 +101,9 @@ def run_track(args):
         feed_id=args.feed_id,
         realtime=realtime,
         write_video=write_video,
-        write_recordings=write_recordings
+        write_recordings=write_recordings,
+        width=width,
+        height=height
     )
 
     if args.show_display:#Should real time tracking be shown?
@@ -153,6 +186,7 @@ def main():
     gui_parser.add_argument("--camera", "-c", help="Camera index", type=int)
     gui_parser.add_argument("--file", "-f", help="Video file path")
     gui_parser.add_argument("--out", "-o", help="Output JSON file path")
+    gui_parser.add_argument("--res", "-r", help="Video resolution, e.g., 640x480", default="640x480")
 
     # Track subcommand
     track_parser = subparsers.add_parser("track", help="Start a tracking server")
@@ -164,6 +198,7 @@ def main():
     track_parser.add_argument("--write-rec", "-w", help="Whether tracking should be output to a csv file", action='store_true')
     track_parser.add_argument("--write-vid", "-d", help="Whether video should be recorded to a file", action='store_true')
     track_parser.add_argument("--show-display", "-s", help="Whether tracking should be displayed", action='store_true')
+    track_parser.add_argument("--res", "-r", help="Video resolution, e.g., 640x480", default="640x480")
 
     # Clear subcommand
     clear_parser = subparsers.add_parser("clear", help="Remove all feed/client files")

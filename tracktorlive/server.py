@@ -146,6 +146,8 @@ class TracktorServer:
         self.recorded_points = [] 
         self.recorded_times  = [] 
         cap_temp = cv2.VideoCapture(self.vidinput)
+        cap_temp.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+        cap_temp.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
         ret, frame = cap_temp.read()
         self.framesize = (int(frame.shape[1]*1.0),
                             int(frame.shape[0]*1.0))# FIXME: scaling
@@ -160,6 +162,7 @@ class TracktorServer:
                                     frameSize = self.framesize,
                                     isColor = True
                                 )
+            assert self.vidout.isOpened()
         cap_temp.release()
 
         if self.write_recordings.value:
@@ -392,6 +395,9 @@ class TracktorServer:
         if self.running.value:
             self.stop()
             time.sleep(0.001)
+        if self.write_video.value:
+            if self.vidout.isOpened():
+                self.vidout.release()
         try:
             self.datashm.close()
             self.clockshm.close()

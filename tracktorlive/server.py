@@ -43,6 +43,8 @@ def _runforever(server):
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, server.height)
     t_init = time.time()
     databuffer, clockbuffer = server.setup_shared_arrays()
+    if server.write_video.value:
+        server.vidout = server.setup_vidout()
 
     for func in server.atstart:
         server.atstart[func](server)
@@ -58,6 +60,9 @@ def _runforever(server):
 
     for func in server.atstop:
         server.atstop[func](server)
+
+    if server.write_video.value:
+        server.vidout.release()
     cap.release()
     #server.stop()#???
 
@@ -154,15 +159,6 @@ class TracktorServer:
 
         if self.write_video.value:
             os.makedirs(self.feed_id, exist_ok=True)
-            fourcc = cv2.VideoWriter_fourcc(*'XVID')
-            self.vidout = cv2.VideoWriter(
-                                    filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
-                                    fourcc = fourcc,
-                                    fps = cap_temp.get(cv2.CAP_PROP_FPS),
-                                    frameSize = self.framesize,
-                                    isColor = True
-                                )
-            assert self.vidout.isOpened()
         cap_temp.release()
 
         if self.write_recordings.value:
@@ -252,6 +248,22 @@ class TracktorServer:
         clockbuffer[:] = np.nan
 
         return databuffer, clockbuffer
+
+    def setup_vidout(self):
+        """
+        Does a parallelisation-proof vidout setup.
+        """
+
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        vidout = cv2.VideoWriter(
+                                filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
+                                fourcc = fourcc,
+                                fps = self.params['fps'],
+                                frameSize = self.framesize,
+                                isColor = True
+                            )
+        assert vidout.isOpened()
+        return vidout
 
     def get_data_and_clock(self):
         """Returns a copy of the current data and clock buffers, with thread-safe access."""
@@ -384,8 +396,8 @@ class TracktorServer:
 
         self.databuffer[:,:,-1] = -1.0
         self.clockbuffer[-1] = -1.0
-        if self.write_video.value:
-            self.vidout.release()
+#        if self.write_video.value:
+#            self.vidout.release()
         if self.write_recordings.value:
             self.recout.close()
 
@@ -395,9 +407,6 @@ class TracktorServer:
         if self.running.value:
             self.stop()
             time.sleep(0.001)
-        if self.write_video.value:
-            if self.vidout.isOpened():
-                self.vidout.release()
         try:
             self.datashm.close()
             self.clockshm.close()

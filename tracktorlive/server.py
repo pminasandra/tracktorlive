@@ -103,8 +103,8 @@ class TracktorServer:
         self.vidinput = vidinput
         self.write_recordings = mp.Value('b', write_recordings)
         self.write_video = mp.Value('b', write_video)
-        self.width = wdith
-        self.height = wdith
+        self.width = width
+        self.height = height
 
         if timeout is None:
             self.timeout = np.inf

@@ -1,5 +1,5 @@
 
-# List of cassettes 
+# 📚 Cassette Library
 
 # Visualisiation cassettes:
 
@@ -45,7 +45,7 @@ def add_mask(server):
     frame[mask == 0] = 0
 ```
 
-### Rectangular mask
+### Rectangular mask:
 
 ```
 # Mask area (rectangle)
@@ -65,7 +65,7 @@ def add_mask(server):
 
 ## :clock8: Add timestamp:
 
-### Add timestamp on the gui video (the one we visualise on real-time):
+### Add timestamp on the GUI video (the one we visualise on real-time):
 
 This cassette adds a timestamp to the video we visualise, but it does not appear in the recorded video. This is useful for real-time tracking, but not for analysing saved videos.
 Because the timestamp is added after retrieving the frame, there may be a small error (a few milliseconds) between the displayed time and the actual time the frame was captured.
@@ -89,7 +89,7 @@ def show(server):
     cv2.waitKey(1)
 ```
 
-## Add current timestamp on recorded videos and/or the GUI video (the one we visualise)
+## Add timestamp on recorded videos and/or the GUI video (the one we visualise)
 
 This cassette is useful for chunked videos, or normal recording, and can add the current time on the video files. There may be a small error (a few milliseconds) between the displayed time and the actual time the frame was captured.
 
@@ -157,6 +157,7 @@ def show(server):
 ```
 
 ## :target: Region of Interest
+These cassettes are used to define regions of interest (ROI). These regions can be combined with the visualisation cassettes, to highlight specific zones in videos, or could be used in real-time experiments to trigger actions when animals are inside or outside those ROI.
 
 # Define area of interest (rectangular)
 # Edges of the area in pixels

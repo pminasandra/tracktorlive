@@ -89,7 +89,7 @@ def show(server):
     cv2.waitKey(1)
 ```
 
-## Add timestamp on recorded videos and/or the GUI video (the one we visualise)
+### Add timestamp on recorded videos and/or the GUI video (the one we visualise)
 
 This cassette is useful for chunked videos, or normal recording, and can add the current time on the video files. There may be a small error (a few milliseconds) between the displayed time and the actual time the frame was captured.
 
@@ -159,6 +159,9 @@ def show(server):
 ## :target: Region of Interest
 These cassettes are used to define regions of interest (ROI). These regions can be combined with the visualisation cassettes, to highlight specific zones in videos, or could be used in real-time experiments to trigger actions when animals are inside or outside those ROI.
 
+### Rectangular ROI
+
+```
 # Define area of interest (rectangular)
 # Edges of the area in pixels
 top = 120
@@ -201,8 +204,10 @@ def show(server):
     cv2.imshow('tracking', fr2)
 
     cv2.waitKey(1)
+```
+### Circular ROI
 
-
+```
 # Define region of interest (circle)
 # parameters
 center = (268, 167)  # Centre of the circle
@@ -233,15 +238,24 @@ def show(server):
     cv2.imshow('tracking', fr2)
 
     cv2.waitKey(1)
+```
 
 
+## ✂️ Chunking cassettes:
 
-### Chunking function
-# These cassettes help to record videos only when individuals are inside or outside of specific regions of interest.
-# This cassette can be combined with cassettes of regions of interest (see "Region of interest" cassettes, and how to visualise them).
-# In this example we record when the individual in the right half of the setup, so when the individual crosses the right edge of our region of interest. We can do so with:
+These cassettes help to record videos only when individuals are inside or outside of specific regions of interest.
+They can be combined with "region of interest" and "visualisation" cassettes.
 
+### Individual inside or outside of a region of interest:
+
+Here below we provide an example to record the video only when the individual tracked is in the right half of the setup. 
+This means that we start recording when the individual crosses the right edge of our region of interest.
+
+```
+# Define right edge of the ROI (pixel):
 right = 300
+
+# Function to detect when the individual is outside of the ROI
 def _out_rect(locs, right=right):
     return locs[0,0] > right
     
@@ -284,12 +298,14 @@ def chunking(server):
                 # define video names
                 fname = f'chunk-{ulid.ULID()}.avi'
                 server.dumpvideo(joinpath('ant-chunked', fname))
+```
 
+### Record when two animals are close to each other:
 
-# Chunk video when two animals are close to each other
-# This cassette will record only when to animals are in close proximity. 
+This cassette will record only when to animals are in close proximity. 
+
+```
 # We want to record when animals are within this distance in pixels:
-
 THRESH_APPROACH_DIST = 60 #px
 THRESH_APPROACH_DIST2 = THRESH_APPROACH_DIST**2 #px**2
 
@@ -336,13 +352,16 @@ def chunking(server):
                 # name file
                 fname = f'chunk-{ulid.ULID()}.avi'
                 server.dumpvideo(joinpath(directory_name, fname))
+```
+## 🤖 Arduino cassettes:
 
+These cassettes are useful to connect real-time behaviour with actions triggered by an Arduino board, or similar devices.
 
-# Arduino
+### Detect the Arduino port. 
+This cassette is used to automatically detect the USB port connected to the Arduino.
+This code has been tested on Linux, macOS, and Windows. However, some systems may use different port naming conventions, which might require adjusting the code.
 
-# Detect the Arduino port. This code has been tested on Linux, macOS, and Windows.
-# However, some systems may use different port naming conventions, which might require adjusting the code.
-
+```
 def find_arduino_port():
     ports = serial.tools.list_ports.comports()
     for port in ports:
@@ -351,10 +370,15 @@ def find_arduino_port():
         if 'ttyUSB' in port.device or 'ser' in desc or 'arduino' in manu or 'arduino' in desc:
             return port.device
     raise RuntimeError('No arduino device could be found')
+```
 
-# Arduino with several animals
-# This code can be easily modified to trigger an action in case ANY animal is in the region of interest instead of ALL of them. To run this code we first need to 
+### Tracking several animals + ROI:
 
+This cassette will send a signal to the Arduino board when all individuals tracked are inside a specific ROI.
+This code can be easily modified to trigger an action in case ANY animal is in the region of interest instead of ALL of them.
+This cassette should be combined with Detect Arduino port, region of interest and visualise cassettes.
+
+```
 #1. Add cassette to Detect Arduino port here (def find_arduino_port()).
 
 # We test if we can detect the arduino port correctly and establish connection:
@@ -400,10 +424,14 @@ def send_to_arduino_open(data, clock):
             door_open = False
             lastTrigger = time.time()
             count = 0
+```
 
-# Arduino with a single animal
-# It is advice to add a threshold time
+### Tracking a single animal + ROI:
 
+This cassette is useful for sending a signal to the Arduino board when an individual enters or exits a Region of Interest (ROI).
+It is recommended to add a threshold time — the minimum amount of time the individual must remain inside or outside the ROI before the signal is sent — to avoid false triggers from brief movements or noise.
+
+```
 #1. Add cassette to Detect Arduino port here (def find_arduino_port()).
 
 # We test if we can detect the arduino port correctly and establish connection:
@@ -436,14 +464,15 @@ def send_to_arduino(data, clock):
 
     if _in_circle(curr_loc) and not _in_circle(prev_loc):# animal just moved into the circular area
            ser.write(b'm')
+```
 
-# Looming
+## 🎮 Looming:
 
-# This shows how to setup a server-client system to run a specific command, in
-# this case play a video, whenever the animal is moving. The video example is
-# motivated by presenting looming stimuli, but any shell command can be added in
-# its place, e.g., to run equipment, launch web services, etc. Likewise, any
-# condition other than velocity can also be programmed.
+This cassette shows how to setup a server-client system to run a specific command, in this case play a video, whenever the animal is moving. 
+The video example is motivated by presenting looming stimuli, but any shell command can be added in its place, e.g., to run equipment, launch web services, etc. 
+Likewise, any condition other than velocity can also be programmed.
+
+```
 # User params:
 VEL_CALC_NUM_FRAMES = 5
 THRESHOLD_VEL = 125 #px/s
@@ -487,11 +516,13 @@ def average_speed(data, clock):
     if avg_speed > THRESHOLD_VEL and time.time() - time_last.value > COMMAND_COOLDOWN:
         time_last.value = time.time()
         run_quiet_command()
+```
 
+## 🔍 Crop & Register:
 
-# Crop & Register
-# This cassette crops zoomed images of the individuals detected.
+This cassette crops zoomed images of the individuals detected.
 
+```
 # Define parameters
 CROP_WIDTH, CROP_HEIGHT = 200, 200
 CROPPED_DIR = "centered-clips"
@@ -548,4 +579,26 @@ def close_crop_writer(server):
     if hasattr(server, "crop_writer") and server.crop_writer is not None:
         server.crop_writer.release()
         server.crop_writer = None
+```
 
+## 🛑 Stop cassette:
+
+This cassette can be use to stop a function. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 
+It can also be useful to stop all processes in real-time experiments after a certain amount of time elapsed, when some specific action was triggered, etc. 
+
+```
+# Stop function
+@server.stopfunc
+def close_crop_writer(server):
+    if hasattr(server, "crop_writer") and server.crop_writer is not None:
+        server.crop_writer.release()
+        server.crop_writer = None
+```
+
+# Missing cassettes : 
+
+## detect direction of the animal
+
+## plot speed, zones visited, etc at the end of a video file
+
+## plot speed, zones visited, etc for real-time experiments

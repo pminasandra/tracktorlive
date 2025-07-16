@@ -156,7 +156,7 @@ def show(server):
     cv2.waitKey(1)
 ```
 
-## :target: Region of Interest
+## 🎯 Region of Interest
 These cassettes are used to define regions of interest (ROI). These regions can be combined with the visualisation cassettes, to highlight specific zones in videos, or could be used in real-time experiments to trigger actions when animals are inside or outside those ROI.
 
 ### Rectangular ROI
@@ -177,17 +177,6 @@ alpha = 0.5  # Transparency factor: 0.0 = fully transparent, 1.0 = fully opaque
 top_left = (left, top)
 bottom_right = (right, bottom)
 
-def _in_rect(locs, top=top, right=right, bottom=bottom, left=left):
-    return left < locs[0] < right and top < locs[1] < bottom
-    
-# In this example, we check if the individual has crossed the right edge.
-# Only the X position is considered; the Y position is ignored.
-
-def _out_rect(locs, right=right):
-    return locs[0,0] > right
-
-# The _in_rect and _out_rect functions can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
-
 # Display the region of interest on screen (this is not visible in recorded videos; to do so please combine with other cassettes: e.g. take a look at timestamp cassettes)
 # Draw rectangle on the overlay
 @server
@@ -205,6 +194,25 @@ def show(server):
 
     cv2.waitKey(1)
 ```
+### Detect individuals inside/outside a rectangular region of interest:
+This cassette can be used after the cassette above (Rectangular ROI) to detect when individuals are inside or outside the ROI.  
+For example:
+- To trigger an event when all individuals are inside the ROI  
+- To monitor entries and exits for behavioural analysis  
+- To send a signal to external hardware (e.g. Arduino) when crossing the ROI boundary
+```
+def _in_rect(locs, top=top, right=right, bottom=bottom, left=left):
+    return left < locs[0] < right and top < locs[1] < bottom
+    
+# In this example, we check if the individual has crossed the right edge.
+# Only the X position is considered; the Y position is ignored.
+
+def _out_rect(locs, right=right):
+    return locs[0,0] > right
+
+# The _in_rect and _out_rect functions can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
+```
+
 ### Circular ROI
 
 ```
@@ -214,13 +222,6 @@ center = (268, 167)  # Centre of the circle
 radius = 45          # Radius of the circle
 color = (0, 255, 0)  # Green
 alpha = 0.5          # Transparency factor
-
-def _in_circle(locs, center=center, radius=radius):
-    # Calculate the distance from locs to the circle center
-    distance = np.sqrt((locs[0, 0] - center[0])**2 + (locs[0, 1] - center[1])**2)
-    return distance < radius
-
-# The _in_circle function can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
 
 # Draw circle on the overlay
 
@@ -239,7 +240,21 @@ def show(server):
 
     cv2.waitKey(1)
 ```
+### Detect invididuals inside/outside the circular region of interest:
 
+This cassette can be used after the cassette above (Circular ROI) to detect when individuals are inside or outside the ROI.  
+For example:
+- To trigger an event when all individuals are inside the ROI  
+- To monitor entries and exits for behavioural analysis  
+- To send a signal to external hardware (e.g. Arduino) when crossing the ROI boundary
+```
+def _in_circle(locs, center=center, radius=radius):
+    # Calculate the distance from locs to the circle center
+    distance = np.sqrt((locs[0, 0] - center[0])**2 + (locs[0, 1] - center[1])**2)
+    return distance < radius
+
+# The _in_circle function can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
+```
 
 ## ✂️ Chunking cassettes:
 
@@ -250,6 +265,7 @@ They can be combined with "region of interest" and "visualisation" cassettes.
 
 Here below we provide an example to record the video only when the individual tracked is in the right half of the setup. 
 This means that we start recording when the individual crosses the right edge of our region of interest.
+First, we need to define a ROI with a cassette, for instance:
 
 ```
 # Define right edge of the ROI (pixel):
@@ -260,7 +276,9 @@ def _out_rect(locs, right=right):
     return locs[0,0] > right
     
 # We could also define a circular region of interest, and then check when locs[0, 0] > than desired distance (to record when individual is outside the area).
-
+```
+After that, we can use the chunking cassette, such as:
+```
 # Function to do the chunking based on the condition above:
 # Global variables needed to track the time spent inside or outside the regions of interest
 frames_outside_thresh = 0
@@ -371,12 +389,21 @@ def find_arduino_port():
             return port.device
     raise RuntimeError('No arduino device could be found')
 ```
+To run this cassette, and verify that the Arduino port is well detected, we can run: 
+
+```
+port = find_arduino_port()
+ser = serial.Serial(port, 9600, timeout=1)
+```
+The ```ser``` line establishes a serial connection between your computer and the Arduino via the specified port.
 
 ### Tracking several animals + ROI:
 
 This cassette will send a signal to the Arduino board when all individuals tracked are inside a specific ROI.
 This code can be easily modified to trigger an action in case ANY animal is in the region of interest instead of ALL of them.
 This cassette should be combined with Detect Arduino port, region of interest and visualise cassettes.
+
+Before using this cassette, we should add some cassettes described above:
 
 ```
 #1. Add cassette to Detect Arduino port here (def find_arduino_port()).
@@ -390,8 +417,10 @@ ser = serial.Serial(port, 9600, timeout=1)
 # 3. Define a function using this ROI, such as _in_circle() or _in_rect(), to detect if individual is inside or outside of the ROI.
 
 # 4. Insert a cassette to draw your region of interest on the overlay here (optional).
+```
 
-# Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+```
 # This function tracks individuals and sends a signal to the Arduino board when all individuals are inside the ROI.
 # In this example, the Arduino opens a door when all individuals are inside the ROI.
 # The door closes approximately one second later (30 frames) once any individual leaves the ROI.
@@ -430,6 +459,7 @@ def send_to_arduino_open(data, clock):
 
 This cassette is useful for sending a signal to the Arduino board when an individual enters or exits a Region of Interest (ROI).
 It is recommended to add a threshold time — the minimum amount of time the individual must remain inside or outside the ROI before the signal is sent — to avoid false triggers from brief movements or noise.
+Before running this cassette, we should run some cassettes described above:
 
 ```
 #1. Add cassette to Detect Arduino port here (def find_arduino_port()).
@@ -451,8 +481,11 @@ def _in_circle(locs, center=center, radius=radius):
     return distance < radius
 
 # 3. Insert a cassette to draw your region of interest on the overlay here (optional).
+```
 
-# Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+
+```
 # This function tracks our individual and sends a signal to the Arduino board the individual is inside the ROI.
 # The specific action performed by the Arduino must be programmed on the Arduino board itself.
 # See our Arduino code examples for guidance.
@@ -521,13 +554,8 @@ def average_speed(data, clock):
 ## 🔍 Crop & Register:
 
 This cassette crops zoomed images of the individuals detected.
-
+First, we can add a cassette to display the video or camera feed:
 ```
-# Define parameters
-CROP_WIDTH, CROP_HEIGHT = 200, 200
-CROPPED_DIR = "centered-clips"
-os.makedirs(CROPPED_DIR, exist_ok=True)
-
 # 1. Add cassette to show video, such as:
 @server
 def show(server):
@@ -536,6 +564,15 @@ def show(server):
         return
     cv2.imshow('tracking', fr)
     cv2.waitKey(1)
+```
+
+Then, we can add our crop & register cassette, such as:
+
+```
+# Define parameters
+CROP_WIDTH, CROP_HEIGHT = 200, 200
+CROPPED_DIR = "centered-clips"
+os.makedirs(CROPPED_DIR, exist_ok=True)
 
 # 2. We define a crop to center function:
 @server
@@ -572,7 +609,9 @@ def crop_to_center(server):
         server.crop_writer = cv2.VideoWriter(outpath, fourcc, server.fps, (CROP_WIDTH, CROP_HEIGHT))
 
     server.crop_writer.write(crop)
-
+```
+We should add a stop cassette at the end (see description below):
+```
 # Stop function
 @server.stopfunc
 def close_crop_writer(server):
@@ -580,7 +619,6 @@ def close_crop_writer(server):
         server.crop_writer.release()
         server.crop_writer = None
 ```
-
 ## 🛑 Stop cassette:
 
 This cassette can be use to stop a function. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 

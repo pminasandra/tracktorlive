@@ -373,7 +373,7 @@ def chunking(server):
                 fname = f'chunk-{ulid.ULID()}.avi'
                 server.dumpvideo(joinpath(directory_name, fname))
 ```
-## 🔍 Crop & Register cassettes
+## 🔍 Crop & Register:
 
 This cassette crops zoomed images of the individuals detected.
 First, we can add a cassette to display the video or camera feed:
@@ -627,9 +627,12 @@ def send_to_arduino(data, clock):
 
 # Plotting cassettes
  
-## 📈 Automatically generate plots at the end of a video file:
+## 📈 Automatically generate and update plots:
+
+### Automtaically generate a plot at the end of a video file
 
 This cassette displays and saves a plot when we reach the end of the video file we are analysing. In this example, we compute the individual speed (pixels/second) every five frames.
+
 ```
 # Shared buffer
 all_speeds = []
@@ -668,7 +671,7 @@ def plot_final_avg_speed(server):
     plt.show()
 ```
 
-## 📉 Display and update a plot in real-time:
+### Display and update a plot in real-time:
 
 This cassette displays (and saves) a plot every few seconds. It is useful for monitoring a variable in real time—allowing you to stop an experiment when, for example, an individual’s value reaches a certain threshold.
 
@@ -733,6 +736,3 @@ def close_crop_writer(server):
 # Missing cassettes : 
 
 ## detect direction of the animal
-
-
-## plot speed, zones visited, etc for real-time experiments

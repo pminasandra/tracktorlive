@@ -1,7 +1,7 @@
 
 # 📚 Cassette Library
 
-# Visualisiation cassettes:
+# Visualisation cassettes
 
 ## 👀 Visualise video or camera feed on screen:
 
@@ -23,7 +23,7 @@ def show(server):
 
 These cassettes create a black image (a mask) with the same dimensions as the video frames. On this mask, we draw a white shape (circular or rectangular) that defines the area we want to keep visible. Finally, we apply this mask to the video frame: all areas outside the shape (black regions) are removed, so only the area inside the defined shape remains visible.
 
-### Circular mask:
+### Circular mask
 
 ```
 # define position of mask, we define the centre of the circle (relative to the centre of the image)
@@ -45,7 +45,7 @@ def add_mask(server):
     frame[mask == 0] = 0
 ```
 
-### Rectangular mask:
+### Rectangular mask
 
 ```
 # Mask area (rectangle)
@@ -65,7 +65,7 @@ def add_mask(server):
 
 ## :clock8: Add timestamp:
 
-### Add timestamp on the GUI video (the one we visualise on real-time):
+### Add timestamp on the GUI video (the one we visualise on real-time)
 
 This cassette adds a timestamp to the video we visualise, but it does not appear in the recorded video. This is useful for real-time tracking, but not for analysing saved videos.
 Because the timestamp is added after retrieving the frame, there may be a small error (a few milliseconds) between the displayed time and the actual time the frame was captured.
@@ -156,7 +156,7 @@ def show(server):
     cv2.waitKey(1)
 ```
 
-## 🎯 Region of Interest
+## 🎯 Region of Interest:
 These cassettes are used to define regions of interest (ROI). These regions can be combined with the visualisation cassettes, to highlight specific zones in videos, or could be used in real-time experiments to trigger actions when animals are inside or outside those ROI.
 
 ### Rectangular ROI
@@ -194,7 +194,7 @@ def show(server):
 
     cv2.waitKey(1)
 ```
-### Detect individuals inside/outside a rectangular region of interest:
+### Detect individuals inside/outside a rectangular region of interest
 This cassette can be used after the cassette above (Rectangular ROI) to detect when individuals are inside or outside the ROI.  
 For example:
 - To trigger an event when all individuals are inside the ROI  
@@ -240,7 +240,7 @@ def show(server):
 
     cv2.waitKey(1)
 ```
-### Detect invididuals inside/outside the circular region of interest:
+### Detect invididuals inside/outside the circular region of interest
 
 This cassette can be used after the cassette above (Circular ROI) to detect when individuals are inside or outside the ROI.  
 For example:
@@ -256,12 +256,14 @@ def _in_circle(locs, center=center, radius=radius):
 # The _in_circle function can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
 ```
 
-## ✂️ Chunking cassettes:
+# Video manipulation cassettes
+
+## ✂️ Chunking:
 
 These cassettes help to record videos only when individuals are inside or outside of specific regions of interest.
 They can be combined with "region of interest" and "visualisation" cassettes.
 
-### Individual inside or outside of a region of interest:
+### Individual inside or outside of a region of interest
 
 Here below we provide an example to record the video only when the individual tracked is in the right half of the setup. 
 This means that we start recording when the individual crosses the right edge of our region of interest.
@@ -318,7 +320,7 @@ def chunking(server):
                 server.dumpvideo(joinpath('ant-chunked', fname))
 ```
 
-### Record when two animals are close to each other:
+### Record when two animals are close to each other
 
 This cassette will record only when to animals are in close proximity. 
 
@@ -371,187 +373,7 @@ def chunking(server):
                 fname = f'chunk-{ulid.ULID()}.avi'
                 server.dumpvideo(joinpath(directory_name, fname))
 ```
-## 🤖 Arduino cassettes:
-
-These cassettes are useful to connect real-time behaviour with actions triggered by an Arduino board, or similar devices.
-
-### Detect the Arduino port. 
-This cassette is used to automatically detect the USB port connected to the Arduino.
-This code has been tested on Linux, macOS, and Windows. However, some systems may use different port naming conventions, which might require adjusting the code.
-
-```
-def find_arduino_port():
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        desc = port.description.lower()
-        manu = (port.manufacturer or "").lower()
-        if 'ttyUSB' in port.device or 'ser' in desc or 'arduino' in manu or 'arduino' in desc:
-            return port.device
-    raise RuntimeError('No arduino device could be found')
-```
-To run this cassette, and verify that the Arduino port is well detected, we can run: 
-
-```
-port = find_arduino_port()
-ser = serial.Serial(port, 9600, timeout=1)
-```
-The ```ser``` line establishes a serial connection between your computer and the Arduino via the specified port.
-
-### Tracking several animals + ROI:
-
-This cassette will send a signal to the Arduino board when all individuals tracked are inside a specific ROI.
-This code can be easily modified to trigger an action in case ANY animal is in the region of interest instead of ALL of them.
-This cassette should be combined with Detect Arduino port, region of interest and visualise cassettes.
-
-Before using this cassette, we should add some cassettes described above:
-
-```
-#1. Add cassette to Detect Arduino port here (def find_arduino_port()).
-
-# We test if we can detect the arduino port correctly and establish connection:
-port = find_arduino_port()
-ser = serial.Serial(port, 9600, timeout=1)
-
-# 2. Insert a region of interest (ROI) cassette here
-
-# 3. Define a function using this ROI, such as _in_circle() or _in_rect(), to detect if individual is inside or outside of the ROI.
-
-# 4. Insert a cassette to draw your region of interest on the overlay here (optional).
-```
-
-Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
-```
-# This function tracks individuals and sends a signal to the Arduino board when all individuals are inside the ROI.
-# In this example, the Arduino opens a door when all individuals are inside the ROI.
-# The door closes approximately one second later (30 frames) once any individual leaves the ROI.
-# The specific action performed by the Arduino must be programmed on the Arduino board itself.
-# See our Arduino code examples for guidance.
-
-# Indicates whether the door is open or close.
-door_open = False
-# Global variables used.
-lastTrigger = 0
-count = 0 
-
-@client
-def send_to_arduino_open(data, clock):
-    global door_open, lastTrigger, count
-    curr_loc = data[:,:,-1] #get last location
-    all_in = all(_in_rect(ant) for ant in curr_loc) # who is in the ROI?
-    now = time.time() # get current time to count the time elapsed between actions.
-    if all_in and not door_open and now - lastTrigger > 5:# animal just moved into the rectangle, and five seconds have elapsed since last time the door was activated
-        ser.write(b'm')
-        print("pillbugs in the house")
-        door_open = True
-        lastTrigger = time.time()
-    
-    elif not all_in and door_open and now-lastTrigger > 5:
-        count += 1
-        if count > 30: #we wait some time before moving the door
-            ser.write(b'k')
-            print("pillbugs out")
-            door_open = False
-            lastTrigger = time.time()
-            count = 0
-```
-
-### Tracking a single animal + ROI:
-
-This cassette is useful for sending a signal to the Arduino board when an individual enters or exits a Region of Interest (ROI).
-It is recommended to add a threshold time — the minimum amount of time the individual must remain inside or outside the ROI before the signal is sent — to avoid false triggers from brief movements or noise.
-Before running this cassette, we should run some cassettes described above:
-
-```
-#1. Add cassette to Detect Arduino port here (def find_arduino_port()).
-
-# We test if we can detect the arduino port correctly and establish connection:
-port = find_arduino_port()
-ser = serial.Serial(port, 9600, timeout=1)
-
-# 2. Insert a region of interest (ROI) cassette, and Define a function using this ROI here. For instance:
-
-center = (268, 167)  # Centre of the circle
-radius = 45          # Radius of the circle
-color = (0, 255, 0)  # Green
-alpha = 0.5          # Transparency factor
-
-def _in_circle(locs, center=center, radius=radius):
-    # Calculate the distance from locs to the circle center
-    distance = np.sqrt((locs[0, 0] - center[0])**2 + (locs[0, 1] - center[1])**2)
-    return distance < radius
-
-# 3. Insert a cassette to draw your region of interest on the overlay here (optional).
-```
-
-Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
-
-```
-# This function tracks our individual and sends a signal to the Arduino board the individual is inside the ROI.
-# The specific action performed by the Arduino must be programmed on the Arduino board itself.
-# See our Arduino code examples for guidance.
-
-@client
-def send_to_arduino(data, clock):
-    curr_loc = data[:,:,-1]
-    prev_loc = data[:,:,-2]
-
-    if _in_circle(curr_loc) and not _in_circle(prev_loc):# animal just moved into the circular area
-           ser.write(b'm')
-```
-
-## 🎮 Looming:
-
-This cassette shows how to setup a server-client system to run a specific command, in this case play a video, whenever the animal is moving. 
-The video example is motivated by presenting looming stimuli, but any shell command can be added in its place, e.g., to run equipment, launch web services, etc. 
-Likewise, any condition other than velocity can also be programmed.
-
-```
-# User params:
-VEL_CALC_NUM_FRAMES = 5
-THRESHOLD_VEL = 125 #px/s
-RUN_COMMAND = "cvlc --fullscreen --play-and-exit --no-osd ./looming-video.mp4"
-COMMAND_COOLDOWN = 15 #seconds
-# Code starts below.
-
-# Uncomment this code below to show the video on screen:
-# ~ @server
-# ~ def show(server):
-    # ~ if server.current_frame is None:
-        # ~ return
-    # ~ cv2.imshow('tracking', server.current_frame)
-    # ~ cv2.waitKey(1)
-
-client = trl.spawn_trclient(server.feed_id)
-
-time_last = mp.Value('d', 0.0)
-
-## We will now write a function to do the velocity based video response on this distance:
-@client # adding this decorator makes this a client-side casette
-def average_speed(data, clock):
-    # Extract recent data
-    coords = data[0, :, -VEL_CALC_NUM_FRAMES:]  # shape (2, VEL_CALC_NUM_FRAMES)
-    times = clock[-VEL_CALC_NUM_FRAMES:]
-
-    # Skip if any coordinates or timestamps are invalid
-    if np.isnan(coords).any() or np.isnan(times).any():
-        return
-
-    # Compute displacements and distances
-    diffs = np.diff(coords, axis=1)  # shape (2, VEL_CALC_NUM_FRAMES-1)
-    dists = np.linalg.norm(diffs, axis=0)  # shape (VEL_CALC_NUM_FRAMES-1,)
-
-    dt = times[-1] - times[0]
-    if dt > 0:
-        avg_speed = np.sum(dists) / dt
-    else:
-        return
-
-    if avg_speed > THRESHOLD_VEL and time.time() - time_last.value > COMMAND_COOLDOWN:
-        time_last.value = time.time()
-        run_quiet_command()
-```
-
-## 🔍 Crop & Register:
+## 🔍 Crop & Register cassettes
 
 This cassette crops zoomed images of the individuals detected.
 First, we can add a cassette to display the video or camera feed:
@@ -619,7 +441,282 @@ def close_crop_writer(server):
         server.crop_writer.release()
         server.crop_writer = None
 ```
-## 🛑 Stop cassette:
+
+# Matrix cassettes
+
+## 🎮 Looming:
+
+This cassette shows how to setup a server-client system to run a specific command, in this case play a video, whenever the animal is moving. 
+The video example is motivated by presenting looming stimuli, but any shell command can be added in its place, e.g., to run equipment, launch web services, etc. 
+Likewise, any condition other than velocity can also be programmed.
+
+```
+# User params:
+VEL_CALC_NUM_FRAMES = 5
+THRESHOLD_VEL = 125 #px/s
+RUN_COMMAND = "cvlc --fullscreen --play-and-exit --no-osd ./looming-video.mp4"
+COMMAND_COOLDOWN = 15 #seconds
+# Code starts below.
+
+# Uncomment this code below to show the video on screen:
+# ~ @server
+# ~ def show(server):
+    # ~ if server.current_frame is None:
+        # ~ return
+    # ~ cv2.imshow('tracking', server.current_frame)
+    # ~ cv2.waitKey(1)
+
+client = trl.spawn_trclient(server.feed_id)
+
+time_last = mp.Value('d', 0.0)
+
+## We will now write a function to do the velocity based video response on this distance:
+@client # adding this decorator makes this a client-side casette
+def average_speed(data, clock):
+    # Extract recent data
+    coords = data[0, :, -VEL_CALC_NUM_FRAMES:]  # shape (2, VEL_CALC_NUM_FRAMES)
+    times = clock[-VEL_CALC_NUM_FRAMES:]
+
+    # Skip if any coordinates or timestamps are invalid
+    if np.isnan(coords).any() or np.isnan(times).any():
+        return
+
+    # Compute displacements and distances
+    diffs = np.diff(coords, axis=1)  # shape (2, VEL_CALC_NUM_FRAMES-1)
+    dists = np.linalg.norm(diffs, axis=0)  # shape (VEL_CALC_NUM_FRAMES-1,)
+
+    dt = times[-1] - times[0]
+    if dt > 0:
+        avg_speed = np.sum(dists) / dt
+    else:
+        return
+
+    if avg_speed > THRESHOLD_VEL and time.time() - time_last.value > COMMAND_COOLDOWN:
+        time_last.value = time.time()
+        run_quiet_command()
+```
+
+## 🤖 Arduino:
+
+These cassettes are useful to connect real-time behaviour with actions triggered by an Arduino board, or similar devices.
+
+### Detect the Arduino port
+This cassette is used to automatically detect the USB port connected to the Arduino.
+This code has been tested on Linux, macOS, and Windows. However, some systems may use different port naming conventions, which might require adjusting the code.
+
+```
+def find_arduino_port():
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        desc = port.description.lower()
+        manu = (port.manufacturer or "").lower()
+        if 'ttyUSB' in port.device or 'ser' in desc or 'arduino' in manu or 'arduino' in desc:
+            return port.device
+    raise RuntimeError('No arduino device could be found')
+```
+To run this cassette, and verify that the Arduino port is well detected, we can run: 
+
+```
+port = find_arduino_port()
+ser = serial.Serial(port, 9600, timeout=1)
+```
+The ```ser``` line establishes a serial connection between your computer and the Arduino via the specified port.
+
+### Tracking several animals + ROI
+
+This cassette will send a signal to the Arduino board when all individuals tracked are inside a specific ROI.
+This code can be easily modified to trigger an action in case ANY animal is in the region of interest instead of ALL of them.
+This cassette should be combined with Detect Arduino port, region of interest and visualise cassettes.
+
+Before using this cassette, we should add some cassettes described above:
+
+```
+#1. Add cassette to Detect Arduino port here (def find_arduino_port()).
+
+# We test if we can detect the arduino port correctly and establish connection:
+port = find_arduino_port()
+ser = serial.Serial(port, 9600, timeout=1)
+
+# 2. Insert a region of interest (ROI) cassette here
+
+# 3. Define a function using this ROI, such as _in_circle() or _in_rect(), to detect if individual is inside or outside of the ROI.
+
+# 4. Insert a cassette to draw your region of interest on the overlay here (optional).
+```
+
+Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+```
+# This function tracks individuals and sends a signal to the Arduino board when all individuals are inside the ROI.
+# In this example, the Arduino opens a door when all individuals are inside the ROI.
+# The door closes approximately one second later (30 frames) once any individual leaves the ROI.
+# The specific action performed by the Arduino must be programmed on the Arduino board itself.
+# See our Arduino code examples for guidance.
+
+# Indicates whether the door is open or close.
+door_open = False
+# Global variables used.
+lastTrigger = 0
+count = 0 
+
+@client
+def send_to_arduino_open(data, clock):
+    global door_open, lastTrigger, count
+    curr_loc = data[:,:,-1] #get last location
+    all_in = all(_in_rect(ant) for ant in curr_loc) # who is in the ROI?
+    now = time.time() # get current time to count the time elapsed between actions.
+    if all_in and not door_open and now - lastTrigger > 5:# animal just moved into the rectangle, and five seconds have elapsed since last time the door was activated
+        ser.write(b'm')
+        print("pillbugs in the house")
+        door_open = True
+        lastTrigger = time.time()
+    
+    elif not all_in and door_open and now-lastTrigger > 5:
+        count += 1
+        if count > 30: #we wait some time before moving the door
+            ser.write(b'k')
+            print("pillbugs out")
+            door_open = False
+            lastTrigger = time.time()
+            count = 0
+```
+
+### Tracking a single animal + ROI
+
+This cassette is useful for sending a signal to the Arduino board when an individual enters or exits a Region of Interest (ROI).
+It is recommended to add a threshold time — the minimum amount of time the individual must remain inside or outside the ROI before the signal is sent — to avoid false triggers from brief movements or noise.
+Before running this cassette, we should run some cassettes described above:
+
+```
+#1. Add cassette to Detect Arduino port here (def find_arduino_port()).
+
+# We test if we can detect the arduino port correctly and establish connection:
+port = find_arduino_port()
+ser = serial.Serial(port, 9600, timeout=1)
+
+# 2. Insert a region of interest (ROI) cassette, and Define a function using this ROI here. For instance:
+
+center = (268, 167)  # Centre of the circle
+radius = 45          # Radius of the circle
+color = (0, 255, 0)  # Green
+alpha = 0.5          # Transparency factor
+
+def _in_circle(locs, center=center, radius=radius):
+    # Calculate the distance from locs to the circle center
+    distance = np.sqrt((locs[0, 0] - center[0])**2 + (locs[0, 1] - center[1])**2)
+    return distance < radius
+
+# 3. Insert a cassette to draw your region of interest on the overlay here (optional).
+```
+
+Once the region of interest (ROI) is defined, and the connection to the Arduino is established, we launch the client function.
+
+```
+# This function tracks our individual and sends a signal to the Arduino board the individual is inside the ROI.
+# The specific action performed by the Arduino must be programmed on the Arduino board itself.
+# See our Arduino code examples for guidance.
+
+@client
+def send_to_arduino(data, clock):
+    curr_loc = data[:,:,-1]
+    prev_loc = data[:,:,-2]
+
+    if _in_circle(curr_loc) and not _in_circle(prev_loc):# animal just moved into the circular area
+           ser.write(b'm')
+```
+
+
+# Plotting cassettes
+ 
+## 📈 Automatically generate plots at the end of a video file:
+
+This cassette displays and saves a plot when we reach the end of the video file we are analysing. In this example, we compute the individual speed (pixels/second) every five frames.
+```
+# Shared buffer
+all_speeds = []
+all_times = []
+# User params:
+VEL_CALC_NUM_FRAMES = 5
+
+@server
+def average_speed(server):
+    global all_speeds, all_times
+    data, clock = server.get_data_and_clock()
+    coords = data[0, :, -VEL_CALC_NUM_FRAMES:]
+    times = clock[-VEL_CALC_NUM_FRAMES:]
+
+    if np.isnan(coords).any() or np.isnan(times).any():
+        return
+
+    diffs = np.diff(coords, axis=1)
+    dists = np.linalg.norm(diffs, axis=0)
+    dt = times[-1] - times[0]
+    if dt > 0:
+        avg_speed = np.sum(dists) / dt
+        all_speeds.append(avg_speed)
+        all_times.append(times[-1])
+    else:
+        all_speeds.append(0)
+        all_times.append(times[-1])
+        
+@server.stopfunc
+def plot_final_avg_speed(server):
+    plt.scatter(all_times, all_speeds, s=8)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Average speed (px/s)')
+    plt.tight_layout()
+    plt.savefig('./ex1_fig1a.eps', format='eps', dpi=300)
+    plt.show()
+```
+
+## 📉 Display and update a plot in real-time:
+
+This cassette displays (and saves) a plot every few seconds. It is useful for monitoring a variable in real time—allowing you to stop an experiment when, for example, an individual’s value reaches a certain threshold.
+
+While it is tailored for use with a real-time video feed, it can also be applied to pre-recorded video files.
+
+In this example, we compute individual speed (in pixels per second) every five frames, and update the plot display every two seconds. The last displayed plot is automatically saved.
+
+```
+client = trl.spawn_trclient("update_plot")
+
+# Shared buffer
+all_speeds = []
+all_times = []
+# User params:
+VEL_CALC_NUM_FRAMES = 5
+checkpoints = 2 # in seconds
+
+@client
+def average_speed(data, clock):
+    global all_speeds, all_times
+    coords = data[0, :, -VEL_CALC_NUM_FRAMES:]
+    times = clock[-VEL_CALC_NUM_FRAMES:]
+
+    if np.isnan(coords).any() or np.isnan(times).any():
+        return
+
+    diffs = np.diff(coords, axis=1)
+    dists = np.linalg.norm(diffs, axis=0)
+    dt = times[-1] - times[0]
+    if dt > 0:
+        avg_speed = np.sum(dists) / dt
+        all_speeds.append(avg_speed)
+        all_times.append(times[-1])
+    else:
+        all_speeds.append(0)
+        all_times.append(times[-1])
+    plt.ion()
+    if int(times[-1]) % checkpoints == 0:
+        plt.clf()
+        plt.scatter(all_times, all_speeds, s=8)
+        plt.xlabel('Time (s)')
+        plt.ylabel('Average speed (px/s)')
+        plt.tight_layout()
+        plt.savefig('./ex1_fig1a.eps', format='eps', dpi=300)
+        plt.pause(0.001)
+```
+
+# 🛑 Stop cassette:
 
 This cassette can be use to stop a function. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 
 It can also be useful to stop all processes in real-time experiments after a certain amount of time elapsed, when some specific action was triggered, etc. 
@@ -637,6 +734,5 @@ def close_crop_writer(server):
 
 ## detect direction of the animal
 
-## plot speed, zones visited, etc at the end of a video file
 
 ## plot speed, zones visited, etc for real-time experiments

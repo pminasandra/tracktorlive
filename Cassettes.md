@@ -1,7 +1,49 @@
 
 # 📚 Cassette Library
 
-# Visualisation cassettes
+Below, we present a library of modular cassettes designed for use with TracktorLive. Each cassette can be utilised independently to perform specific functions or combined seamlessly with others to construct comprehensive Python scripts. This flexible structure enables users to customise and execute a wide range of TracktorLive functionalities according to their experimental or analytical needs.
+
+# 1. Movement and position cassettes
+
+## 📍 Current position:
+
+This is the most basic and elemental cassette. This cassette is used to detect the current position of an individual, and can be used in real-time or video file examples. This cassette (or similar) is used in most (or all) of the examples provided.
+
+```
+@client
+def get_position(data, clock):
+    coords = data[0, :, -1]
+    if not np.isnan(coords).any():
+        x, y = coords
+        print(f"Position: x = {x:.1f}, y = {y:.1f}")
+```
+
+## ➡️ Direction:
+
+This cassette tracks an individual's movement across frames and calculates their direction based on position changes. It updates direction only when the individual moves beyond a set distance threshold to avoid changes of direction due to noise. Useful for behaviour tracking, navigation analysis, or detecting orientation shifts in real time.
+
+```
+direction = 10 # number of pixels that the animal needs to move before updating position (avoid noise)
+prev = None
+@client
+def get_angle(data, clock):
+    global direction, prev
+    if prev is None or np.isnan(prev).any():
+        prev=data[0, :, -1]
+        return
+    else:
+        coords = data[0, :, -1]
+        Xt=coords[0] - prev[0]
+        Yt=coords[1] - prev[1]
+        distance = np.sqrt(Xt**2 + Yt**2)
+        # if the distance moved is higher than X pixels we update direction and previous position
+        if distance > int(direction):
+            angle=math.degrees(math.atan2(Yt,Xt)) %360
+            prev=data[0, :, -1]
+            print(angle)
+```
+
+# 2. Visualisation cassettes
 
 ## 👀 Visualise video or camera feed on screen:
 
@@ -256,7 +298,7 @@ def _in_circle(locs, center=center, radius=radius):
 # The _in_circle function can be used to trigger Arduino actions, start or stop recording (chunk videos), looming, etc.
 ```
 
-# Video manipulation cassettes
+# 3. Video manipulation cassettes
 
 ## ✂️ Chunking:
 
@@ -442,7 +484,7 @@ def close_crop_writer(server):
         server.crop_writer = None
 ```
 
-# Matrix cassettes
+# 4. Matrix cassettes
 
 ## 🎮 Looming:
 
@@ -625,7 +667,7 @@ def send_to_arduino(data, clock):
 ```
 
 
-# Plotting cassettes
+# 5. Plotting cassettes
  
 ## 📈 Automatically generate and update plots:
 
@@ -719,9 +761,9 @@ def average_speed(data, clock):
         plt.pause(0.001)
 ```
 
-# 🛑 Stop cassette:
+# 6. 🛑 Stop cassettes:
 
-This cassette can be use to stop a function. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 
+Stop cassettes can be use to stop a function or perform an action at the end of a video file, or when stopping a recording. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 
 It can also be useful to stop all processes in real-time experiments after a certain amount of time elapsed, when some specific action was triggered, etc. 
 
 ```
@@ -733,6 +775,12 @@ def close_crop_writer(server):
         server.crop_writer = None
 ```
 
+```
+@server.stopfunc
+def stop(server):
+    print("Shutting down...")
+```
+
 # Missing cassettes : 
 
-## detect direction of the animal
+## Image manipulation, such as changing light contrast, etc

@@ -3,6 +3,9 @@
 
 Below, we present a library of modular cassettes designed for use with TracktorLive. Each cassette can be utilised independently to perform specific functions or combined seamlessly with others to construct comprehensive Python scripts. This flexible structure enables users to customise and execute a wide range of TracktorLive functionalities according to their experimental or analytical needs.
 
+- [Movement & Position cassettes](#1.)
+- [Visualisation cassettes](#2.)
+
 # 1. Movement and position cassettes
 
 ## 📍 Current position:

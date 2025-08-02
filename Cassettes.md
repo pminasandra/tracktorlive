@@ -3,8 +3,12 @@
 
 Below, we present a library of modular cassettes designed for use with TracktorLive. Each cassette can be utilised independently to perform specific functions or combined seamlessly with others to construct comprehensive Python scripts. This flexible structure enables users to customise and execute a wide range of TracktorLive functionalities according to their experimental or analytical needs.
 
-- [Movement & Position cassettes](#1.)
-- [Visualisation cassettes](#2.)
+- [Movement & Position cassettes](#1-movement-and-position-cassettes)
+- [Visualisation cassettes](#2-visualisation-cassettes)
+- [Video manipulation cassettes](#3-video-manipulation-cassettes)
+- [Matrix cassettes](#4-matrix-cassettes)
+- [Plotting cassettes](#5-plotting-cassettes)
+- [Stop cassettes](#6-stop-cassettes)
 
 # 1. Movement and position cassettes
 
@@ -764,8 +768,9 @@ def average_speed(data, clock):
         plt.pause(0.001)
 ```
 
-# 6. 🛑 Stop cassettes:
+# 6. Stop cassettes
 
+## 🛑 Stop server functions
 Stop cassettes can be use to stop a function or perform an action at the end of a video file, or when stopping a recording. It is useful mostly when analysing a video, to stop all processes when we reach the last frame of the file. 
 It can also be useful to stop all processes in real-time experiments after a certain amount of time elapsed, when some specific action was triggered, etc. 
 

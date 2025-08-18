@@ -14,7 +14,7 @@ from . import config
 __version__ = "0.1.0"
 __author__ = "All the authors here" #FIXME
 __license__ = "MIT"
-__url__ = "https://github.com/vivekhsridhar/tracktor-live"
+__url__ = "https://github.com/pminasandra/tracktorlive"
 
 __all__ = ['TracktorServer', 'TracktorClient',
             'spawn_trserver', 'run_trserver', 'close_trserver',

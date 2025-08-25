@@ -1,7 +1,22 @@
 
-# 📚 Cassette Library
+# The Library of Casettes for TracktorLive
 
-Below, we present a library of modular cassettes designed for use with TracktorLive. Each cassette can be utilised independently to perform specific functions or combined seamlessly with others to construct comprehensive Python scripts. This flexible structure enables users to customise and execute a wide range of TracktorLive functionalities according to their experimental or analytical needs.
+  This flexible structure enables users to customise and execute a wide
+range of TracktorLive functionalities according to their experimental or
+analytical needs.
+
+The following is a large library of casettes to be used with TracktorLive.
+As you have read in [DOCS,](DOCS.md) casettes are sets of standalone functions
+that are executed by a server or a client to serve a particular function. 
+Casettes may be combined to perform multiple roles synergistically, so that you
+may satisfy your experimental and analytical needs.
+In each iteration, casettes are executed in the order in which they are declared in
+the code. Since casette-code is intended to be copy-pasted into real scripts,
+care must be taken to ensure that *variable names and function names don't clash
+and cause conflicts*. For guidelines about writing your own casettes and adding
+them to this library, see [CONTRIBUTING-CASETTES.md](CONTRIBUTING-CASETTES.md)
+
+What follows is the set of casettes as it exists now:
 
 - [Movement & Position cassettes](#1-movement-and-position-cassettes)
 - [Visualisation cassettes](#2-visualisation-cassettes)
@@ -12,9 +27,12 @@ Below, we present a library of modular cassettes designed for use with TracktorL
 
 # 1. Movement and position cassettes
 
-## 📍 Current position:
+## 📍 Print current position:
 
-This is the most basic and elemental cassette. This cassette is used to detect the current position of an individual, and can be used in real-time or video file examples. This cassette (or similar) is used in most (or all) of the examples provided.
+This is the most basic and elemental cassette. This cassette is used to detect
+the current position of an individual, and can be used in real-time or video
+file examples. This cassette (or similar) is used in most (or all) of the
+examples provided.
 
 ```
 @client

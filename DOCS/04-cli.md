@@ -74,4 +74,9 @@ connected, in your terminal, you can use:
 3. In case of unexplained bugs, the command `tracktorlive clear` attempts to
    refresh cached data.
 
+
+# **TODO**
+
+Write out all the arguments in the CLI utility and what they do.
+
 [previous](03-installation.md) | [next](05-core-concepts.md)

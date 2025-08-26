@@ -135,5 +135,5 @@ resource, for this purpose.
 system to access web-cams and Arduino devices. You can go [here](COMPORT.md) to
 read instructions for this.
 
-[previous](quickstart.md) | [next](cli.md)
+[previous](02-quickstart.md) | [next](04-cli.md)
 

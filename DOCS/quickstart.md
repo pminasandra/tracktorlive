@@ -10,7 +10,12 @@ You’ll need:
 -    A parameter JSON file defining thresholds and filters for tracking (see
     example below for how to generate one)
 
-Your python script will be as follows:
+If you are very new to all this, you will need to be at least somewhat familiar
+with Python to be able to use TracktorLive. You don't need to know much computer
+vision. A basic python tutorial can be found
+[here](https://docs.python.org/3/tutorial/index.html).
+
+Let us create a simple python script to demonstrate TracktorLive. Your python script will be as follows:
 
 ```python
 import json
@@ -21,7 +26,6 @@ import tracktorlive as trl
 # Load tracking parameters
 with open("params.json") as f:
     params = json.load(f)
-params["fps"] = 30.0
 
 # Start a server to track one individual
 server, semm = trl.spawn_trserver("video.mp4", params, n_ind=1, realtime=False)
@@ -42,8 +46,11 @@ trl.run_trsession(server, semm, client)
 
 ```
 
+We will cover how to create an appropriate 'params.json' file later.
 In this example, a TracktorServer handles all the tracking needed,
-and using the print_coords casette, a client handles the response (in this case,
+and using the print_coords casette, a TracktorClient handles the response (in this case,
 the response is simply 'always print the coordinates to a screen').
+
+
 
 [previous](overview.md) | [next](installation.md)

@@ -53,6 +53,8 @@ connected, in your terminal, you can use:
     customise tracking. The server's feed is displayed, and can be used in any
     client-program you wish to write.
 
+
+    **Example usage**:
     This command is incredibly helpful for quickly tracking objects in
     pre-recorded files. For instance, suppose a video, video.mp4, has in it five
     small animals. Using the command `tracktorlive gui --file video.mp4 --out params.json`, you

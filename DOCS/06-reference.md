@@ -1,0 +1,23 @@
+# API style reference
+
+## tracktorlive.spawn_trserver(...)
+This function returns a TracktorServer object. The function takes the following
+arguments:
+
+| argument           | type                 | description                                                                                              |
+| ------------------ | -------------------- | -------------------------------------------------------------------------------------------------------- |
+| `vidinput`         | int or str           | Either an integer referring to a camera ID, or a string describing a path to a video file.               |
+| `params`           | dict                 | All parameters used by Tracktor. Output as JSON by `tracktorlive gui`.                                   |
+| `n_ind`            | int (default 1)      | Number of individuals to be tracked.                                                                     |
+| `buffer_size`      | int (default 10)     | How many seconds of data should be stored in memory.                                                     |
+| `draw`             | bool (default False) | Whether contours and detected centroids should be drawn on the detected objects.                         |
+| `feed_id`          | str (default None)   | A unique identifier for this instance to the TracktorServer. If None, a unique random ID will be chosen. |
+| `keep_recordings`  | bool (default False) | Flag whether to store tracking outputs in separate long-term memory.                                     |
+| `keep_video`       | bool (default False) | Flag whether to store video frames in separate long-term memory.                                         |
+| `realtime`         | bool (default True)  | Whether current input is realtime or prerecorded.                                                        |
+| `timeout`          | int (default inf)    | How many seconds to wait before server is shut down.                                                     |
+| `write_recordings` | bool (default False) | Flag whether to write recorded tracking data to a CSV file on-the-fly.                                   |
+| `write_video`      | bool (default False) | Flag whether to write video frames to an MP4 file on-the-fly.                                            |
+| `width`            | int                  | Width of input video frames.                                                                             |
+| `height`           | int                  | Height of input video frames.                                                                            |
+

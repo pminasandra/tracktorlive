@@ -1,4 +1,4 @@
-# CLI usage
+# Command Line usage
 
 The library TracktorLive ships with the command-line utility `tracktorlive`
 which provides quick ways of running many of the utilities needed for a basic
@@ -18,13 +18,23 @@ connected, in your terminal, you can use:
     tracktorlive gui --camera 0
     ```
 
+    (0 indicates the index of the default camera. If the camera index is
+    unknown, try using v4l2-ctl --list-devices or ls /dev/video* to see
+    available devices, or try other numbers, usually 0 - 6.)
+
     To get parameters from a pre-recorded video, use:
 
     ```bash
-    tracktorlive gui --file /path/to/file
+    tracktorlive gui --file </path/to/file>
     ```
 
-    The `tracktorlive gui` command also has an `--out /path/to/outfile.json`
+    Change ‘/path/to/file’ to your real file name and path, such as
+    `./video.mp4`
+    if your working directory is set to the folder where your video(s) are saved
+        or if full path `~/home/rogerrabbit/Desktop/video.mp4` if working in the
+        home directory.
+
+    The `tracktorlive gui` command also has an `--out </path/to/outfile.json>`
     argument, by which you can directly store the output of the GUI parameter fixing
     method into a .json file. These files are important for launching servers.
 
@@ -51,7 +61,7 @@ connected, in your terminal, you can use:
     You can now simply run:
 
     ```bash
-    tracktorlive track --file video.mp4 --num-track 5 --write-rec
+    tracktorlive track --file video.mp4 --num-track 5 --write-rec params.json
     ```
 
     and the five animals will be tracked, and their outputs will be saved to a

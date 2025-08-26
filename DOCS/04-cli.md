@@ -62,4 +62,4 @@ connected, in your terminal, you can use:
 3. In case of unexplained bugs, the command `tracktorlive clear` attempts to
    refresh cached data.
 
-[previous](installation.md) | [next](core-concepts.md)
+[previous](03-installation.md) | [next](05-core-concepts.md)

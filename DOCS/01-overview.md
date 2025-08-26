@@ -43,4 +43,4 @@ You can use TracktorLive entirely through helper functions and decorators
 without worrying about the internals of the multiprocessing and tracking setup.
 The end-user can rely on the TracktorLive internals for all that.
 
-[previous]() | [next](quickstart.md)
+[previous]() | [next](02-quickstart.md)

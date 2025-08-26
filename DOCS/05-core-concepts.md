@@ -231,4 +231,4 @@ your logic.
 You'll find them in the [`examples/`](../examples/) folder on our GitHub
 repository.
 
-[previous](04-cli.md) | [next](06-reference.md)
+[previous](04-cli.md) | [next](06-usage.md)

@@ -238,7 +238,7 @@ TracktorLive includes tutorials that  demonstrate common use
 cases.  These are a great starting point if you're not sure how to structure
 your logic.
 
-You'll find the [`tutorials`](../tutorials/index.md) on our GitHub
+You'll find the [`tutorials`](../tutorials/) on our GitHub
 repository.
 
 [previous](04-cli.md) | [next](06-usage.md)

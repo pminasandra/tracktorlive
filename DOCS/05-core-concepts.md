@@ -1,5 +1,8 @@
 # Core concepts
 
+**Note:** from this point on in the rest of the docs, all code provided are
+parts of python scripts.
+
 TracktorLive is designed to be minimal and scriptable. Most of the work happens
 through small user-defined functions called **cassette functions**, which let
 you control what happens during tracking and what gets saved or triggered.
@@ -7,7 +10,7 @@ you control what happens during tracking and what gets saved or triggered.
 Cassette functions come in three types:
 
 
-### 🎬 Client Cassette Functions (Basic)
+### 🎬 Client Cassette Functions (No video access)
 
 Client cassette functions are the simplest and most common way to interact with
 tracking data. They run continuously in the background and receive the latest
@@ -76,7 +79,10 @@ To write one:
 
 * Decorate a function with `@server`
 * Accept a single `server` argument
-* Access `server.framesbuffer[-1]` for the latest *tracked* frame
+* Access `server.framesbuffer[-1]` for the latest *tracked* video frame (cv2
+  numpy array). `server.framesbuffer` is indexed parallel to data and clock, so
+  you will know tracked locations of objects in each frame as well as the exact
+  time when each frame was captured.
 - Access server.current_frame for the frame about to be submitted to the
   tracking procedure
 * Access `server.get_data_and_clock()` for safely retrieving position data
@@ -114,9 +120,13 @@ def announce(server):
 
 ---
 
+**Note:** Clients also support startfunc and stopfunc decorators, they also take
+data and clock as arguments like all client cassettes. They will also be useful
+for book-keeping.
+
 ### Internals (Briefly)
 
-Behind the scenes:
+TracktorLive is designed to be beginner friendly. Behind the scenes:
 
 * All tracking and cassette execution is multiprocessing-safe
 * A shared data buffer and clock are synchronized using a semaphore server
@@ -135,7 +145,7 @@ complete pipelines to control recordings, trigger devices, or annotate frames.
 
 ---
 
-### Writing a Client Cassette (Recommended)
+### Writing a Client Cassette
 
 Client cassettes are the easiest place to start. They are regular Python
 functions that are called automatically every few milliseconds while tracking is
@@ -182,7 +192,7 @@ To write one:
   proceeds.)
 
 
-### 🎥 Writing a Server Cassette (Advanced)
+### 🎥 Writing a Server Cassette
 
 If you need access to live frames or want to influence recording directly, you
 can write a server-side cassette.
@@ -224,11 +234,11 @@ left of the screen.
 
 ## Learning more
 
-TracktorLive includes a set of example scripts that demonstrate common use
+TracktorLive includes tutorials that  demonstrate common use
 cases.  These are a great starting point if you're not sure how to structure
 your logic.
 
-You'll find them in the [`examples/`](../examples/) folder on our GitHub
+You'll find the [`tutorials`](../tutorials/index.md) on our GitHub
 repository.
 
 [previous](04-cli.md) | [next](06-usage.md)

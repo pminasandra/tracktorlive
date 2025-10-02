@@ -94,12 +94,18 @@ def run_track(args):
     else:
         n_ind = 1
 
+    if args.timeout is not None:
+        timeout = args.timeout
+    else:
+        timeout = None
+
     server, semm = trl.spawn_trserver(
         source,
         params=params,
         n_ind=n_ind,
         feed_id=args.feed_id,
         realtime=realtime,
+        timeout=timeout,
         write_video=write_video,
         write_recordings=write_recordings,
         width=width,
@@ -198,6 +204,7 @@ def main():
     track_parser.add_argument("--write-rec", "-w", help="Whether tracking should be output to a csv file", action='store_true')
     track_parser.add_argument("--write-vid", "-d", help="Whether video should be recorded to a file", action='store_true')
     track_parser.add_argument("--show-display", "-s", help="Whether tracking should be displayed", action='store_true')
+    track_parser.add_argument("--timeout", "-t", help="How many seconds before server should shut down", type=int)
     track_parser.add_argument("--res", "-r", help="Video resolution, e.g., 640x480", default="640x480")
 
     # Clear subcommand

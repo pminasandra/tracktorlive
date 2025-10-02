@@ -1,5 +1,30 @@
 # TracktorLive Overview
 
+Many real-world situations require a setup where a video stream is continually
+monitored, objects within that stream are tracked, and when certain conditions
+are reached, a response is delivered.  We mainly focus on animal behaviour
+experiments. For instance, a mouse is being tracked, and whenever it reaches a particular
+set of coordinates, a door is opened. More complex cases might exist, and in
+a lot of those cases, a software library to automate such tasks becomes
+necessary. This is because:
+
+1. Designing experiments where humans respond to video feeds is expensive and
+   laborious, and human speed becomes limited when dealing with a high number of
+   tracked individuals. Moreover, human responses come with individual-specific
+   biases.
+   
+2. While it is possible to hard code these tasks, a speed-limit is reached by
+   the often separate tasks of object-tracking (e.g., where is the mouse) and
+   response delivery (e.g., what do we do with this information about the
+   mouse's location?) Since most tracking tasks are largely similar, we could run the
+   tracking code in a separate concurrent process. This concurrency provides
+   a large speed benefit.
+
+3. Finally, computer vision and object tracking are not aspects of programming
+   familiar to most beginners. It would make the learning curve for these tasks
+   much less steep if the 'boilerplate' of object tracking happened in the
+   background while users only focussed on the response delivery aspect.
+
 TracktorLive is a lightweight, real-time tracking and data streaming framework
 designed for use in behavioural experiments, multi-agent video analysis, and
 low-latency response delivery. It builds on the original [Tracktor](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.13166) tracking

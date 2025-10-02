@@ -15,7 +15,8 @@ and allow TracktorLive in WSL to access these devices.
 **Note:** This document applies to Windows users using WSL. Webcam and Arduino
 are not easy to access with WSL right now, requiring a few additional steps.
 I try here to give you a quick run-down on how to go about doing this. I am
-assuming you have already followed the [installation instructions](../DOCS/03-installation) to
+assuming you have already followed the [installation
+instructions](../DOCS/03-installation.md) to
 install and set-up WSL.
 
 ## 1. Bind and attach your device to a WSL session.

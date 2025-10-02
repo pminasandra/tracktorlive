@@ -1,5 +1,14 @@
 # Command Line usage
 
+**Note:** Every command in this section must be entered into your shell.
+This is done by entering the text after the `$` symbol in your terminal.
+Further, everything between `<` and `>` in the commands we have listed here
+needs to be replaced by appropriate text.
+
+**Note:** It helps to be familiar with the command line to use this tool. We recommend Will
+Shotts' [The Linux Command Line](https://linuxcommand.org/tlcl.php), a free
+resource, for this purpose.
+
 The library TracktorLive ships with the command-line utility `tracktorlive`
 which provides quick ways of running many of the utilities needed for a basic
 tracking session. 
@@ -28,15 +37,11 @@ connected, in your terminal, you can use:
     tracktorlive gui --file </path/to/file>
     ```
 
-    Change ‘/path/to/file’ to your real file name and path, such as
-    `./video.mp4`
-    if your working directory is set to the folder where your video(s) are saved
-        or if full path `~/home/rogerrabbit/Desktop/video.mp4` if working in the
-        home directory.
-
     The `tracktorlive gui` command also has an `--out </path/to/outfile.json>`
     argument, by which you can directly store the output of the GUI parameter fixing
     method into a .json file. These files are important for launching servers.
+
+    We will explain this further in [usage](06-usage.md)
 
     Press Esc to exit the GUI at any time.
 
@@ -75,8 +80,30 @@ connected, in your terminal, you can use:
    refresh cached data.
 
 
-# **TODO**
+# Reference
 
-Write out all the arguments in the CLI utility and what they do.
+Here is a list of all relevant subcommands and arguments to use the command line interface.
+
+# `tracktorlive` Command Reference
+
+| Subcommand | Argument | Description |
+|------------|-----------|-------------|
+| **gui** | `--camera, -c <INT>` | Camera index (e.g., 0 for default camera). |
+| | `--file, -f <PATH>` | Path to input video file. |
+| | `--out, -o <PATH>` | Path to output JSON parameter file. |
+| | `--res, -r <WxH>` | Video resolution (default: `640x480`). |
+| **track** | `paramsfile` | Path to JSON parameter file (required). |
+| | `--camera, -c <INT>` | Camera index for live input. |
+| | `--file, -f <PATH>` | Path to input video file. |
+| | `--feed-id, -I <ID>` | Unique feed ID (optional). |
+| | `--numtrack, -n <INT>` | Number of tracked individuals (default: 1). |
+| | `--write-rec, -w` | Save tracking data to CSV file. |
+| | `--write-vid, -d` | Record processed video to file. |
+| | `--show-display, -s` | Show real-time tracking window. |
+| | `--timeout, -t <INT>` | Shut down server after given seconds. |
+| | `--res, -r <WxH>` | Video resolution (default: `640x480`). |
+| **clear** | *(no args)* | Delete all feed/client files (with confirmation). |
+
+
 
 [previous](03-installation.md) | [next](05-core-concepts.md)

@@ -27,6 +27,13 @@ class SyncManager(BaseManager): pass
 SyncManager.register('get_semaphore')
 
 def _runforever(obj):
+
+    # Run start casettes
+    data, clock = obj.get_data_and_clock()
+    for func in obj.atstart:
+        obj.atstart[func](data, clock)
+
+    # Client executes
     while obj.running.value:
         try:
             time.sleep(obj.run_interval) #to not overload everything
@@ -38,6 +45,11 @@ def _runforever(obj):
             print(f"Server: {obj.feed_id} disconnected.")
             obj.running.value = False
             break
+
+    # Run stop casettes
+    data, clock = obj.get_data_and_clock()
+    for func in obj.atstop:
+        obj.atstop[func](data, clock)
 
 class TracktorClient:
 
@@ -102,11 +114,23 @@ class TracktorClient:
                 )
 
         self.casettes = {}
+        self.atstart = {}
+        self.atstop = P{
         self.clientproc = None
 
     def __call__(self, f):
         assert callable(f), "decorate only functions."
         self.casettes[f.__name__] = f
+        return f
+
+    def startfunc(self, f):
+        assert callable(f), "decorate only functions."
+        self.atstart[f.__name__] = f
+        return f
+
+    def stopfunc(self, f):
+        assert callable(f), "decorate only functions."
+        self.atstop[f.__name__] = f
         return f
 
     def get_feed_filename(self):

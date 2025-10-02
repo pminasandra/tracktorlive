@@ -115,7 +115,7 @@ class TracktorClient:
 
         self.casettes = {}
         self.atstart = {}
-        self.atstop = P{
+        self.atstop = {}
         self.clientproc = None
 
     def __call__(self, f):

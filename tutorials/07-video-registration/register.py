@@ -16,7 +16,6 @@ os.makedirs(CROPPED_DIR, exist_ok=True)
 
 with open("termite-params.json") as f:
     params = json.load(f)
-params["fps"] = 60
 
 server, semm = trl.spawn_trserver(
                 "termite_video.mp4",
@@ -39,7 +38,8 @@ def add_mask(server):
     cv2.circle(mask, (mask.shape[1]//2 + mask_offset_x, mask.shape[0]//2 + mask_offset_y), 520, 255, -1)
     frame[mask == 0] = 0
 
-# @server
+# Mac users comment out the below line.
+@server# Comment out this entire line if you don't want a running display.
 def show(server):
     fr = server.framesbuffer[-1]
     if fr is None:
@@ -76,7 +76,7 @@ def crop_to_center(server):
         return
 
     if not hasattr(server, "crop_writer") or server.crop_writer is None:
-        outpath = joinpath(CROPPED_DIR, f"centered-{server.feed_id}.avi")
+        outpath = joinpath(CROPPED_DIR, f"centered-{server.feed_id}.mp4")
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         server.crop_writer = cv2.VideoWriter(outpath, fourcc, server.fps, (CROP_WIDTH, CROP_HEIGHT))
 

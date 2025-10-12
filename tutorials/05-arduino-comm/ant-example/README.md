@@ -8,6 +8,11 @@ TracktorLive correctly, and have your web-cam connected and
 
 We will turn on a red LED when an ant gets inside a region of interest (ROI). 
 In this case, our ROI is defined as the ant being close to a humidified cotton. 
+This tutorial only requires:
+
+1. ```.py``` file with the main code.
+2. ```.json``` file with paramater values.
+3. ```.ino``` file, with Arduino code.  
 
 ## How It Works
 

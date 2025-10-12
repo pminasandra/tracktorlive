@@ -1,4 +1,3 @@
-This tutorial shows how to activate an Arduino (to open a door) only when all individuals are within an area of interest.
 # TracktorLive Tutorial 9: Activate Arduino with several individuals
 
 This tutorial assumes that you have [installed](../../DOCS/03-installation.md)

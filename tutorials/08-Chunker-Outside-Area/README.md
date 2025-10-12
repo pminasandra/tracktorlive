@@ -67,3 +67,6 @@ We can adjust the time threshold, area of interest and output directory within t
 - We directly obtain the number of exits/enters by counting the number of videos stored. 
 
 ## Video example
+
+https://github.com/user-attachments/assets/618d2984-faa8-4764-9162-b6e9317dc2a7
+

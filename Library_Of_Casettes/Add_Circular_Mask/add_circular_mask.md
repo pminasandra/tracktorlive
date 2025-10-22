@@ -7,7 +7,7 @@ known_issues: None.
 
 ```python
 # CASETTE BEGINS: ADD_CIRCULAR_MASK
-# DESCRIPTION: Maska excluding a circle at specified center with specified radius.
+# DESCRIPTION: Masks everything except a circle of specified position and radius.
 # AUTHOR: Vivek H Sridhar Pranav Minasandra
 # USER DEFINED VARIABLES:
 # Coordinates of circle center (px):

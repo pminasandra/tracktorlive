@@ -26,26 +26,61 @@ server, semm = trl.spawn_trserver(
                 draw=False
 )
 
-mask_offset_x = -18
-mask_offset_y = -5
 
+# CASETTE BEGINS: ADD_CIRCULAR_MASK
+# DESCRIPTION: Maska excluding a circle at specified center with specified radius.
+# AUTHOR: Vivek H Sridhar Pranav Minasandra
+# USER DEFINED VARIABLES:
+# Coordinates of circle center (px):
+add_circular_mask_offset_x = -18
+add_circular_mask_offset_y = -5
+# Circle radius (px):
+add_circular_mask_radius = 520
+# KNOWN ISSUES: None
 @server
 def add_mask(server):
     frame = server.current_frame
     if frame is None:
         return
     mask = np.zeros((frame.shape[0], frame.shape[1]))
-    cv2.circle(mask, (mask.shape[1]//2 + mask_offset_x, mask.shape[0]//2 + mask_offset_y), 520, 255, -1)
+    cv2.circle(mask, (mask.shape[1]//2 + add_circular_mask_offset_x, mask.shape[0]//2 +
+    add_circular_mask_offset_y), add_circular_mask_radius, 255, -1)
     frame[mask == 0] = 0
+# CASETTE ENDS: ADD_CIRCULAR_MASK
 
-# Mac users comment out the below line.
-@server# Comment out this entire line if you don't want a running display.
-def show(server):
-    fr = server.framesbuffer[-1]
-    if fr is None:
-        return
-    cv2.imshow('tracking', fr)
-    cv2.waitKey(1)
+
+
+# Mac users, please delete this casette.
+# CASETTE BEGINS: SHOW_LIVE_FEED
+# DESCRIPTION: Displays current tracking from the server in real-time.
+#   Press 'q' or <Esc> to close running display at any time.
+# AUTHOR: Pranav Minasandra
+# USER DEFINED VARIABLES: None
+# KNOWN ISSUES: Does not work on Mac due to fork/spawn issues.
+@server.startfunc
+def show_live_feed_setup(server):
+    server.draw = True
+    server.show_flag = True
+    cv2.namedWindow(wname, cv2.WINDOW_NORMAL)
+
+@server
+def show_live_feed_show(server):
+    if server.show_flag:
+        frame = server.framesbuffer[-1]
+        if frame is None:
+            return
+        cv2.imshow(wname, server.framesbuffer[-1])
+        key = cv2.waitKey(1)
+
+        if key==27 or key==ord('q'):
+            server.show_flag = False
+            cv2.destroyWindow(wname)
+
+@server.stopfunc
+def show_live_feed_cleanup(server):
+    if server.show_flag:
+        cv2.destroyWindow(wname)
+# CASETTE END: SHOW_LIVE_FEED
 
 @server
 def crop_to_center(server):

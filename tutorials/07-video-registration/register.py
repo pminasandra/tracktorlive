@@ -59,9 +59,8 @@ def add_mask(server):
 # KNOWN ISSUES: Does not work on Mac due to fork/spawn issues.
 @server.startfunc
 def show_live_feed_setup(server):
-    server.draw = True
     server.show_flag = True
-    cv2.namedWindow(wname, cv2.WINDOW_NORMAL)
+    cv2.namedWindow(server.feed_id, cv2.WINDOW_NORMAL)
 
 @server
 def show_live_feed_show(server):
@@ -69,17 +68,17 @@ def show_live_feed_show(server):
         frame = server.framesbuffer[-1]
         if frame is None:
             return
-        cv2.imshow(wname, server.framesbuffer[-1])
+        cv2.imshow(server.feed_id, server.framesbuffer[-1])
         key = cv2.waitKey(1)
 
         if key==27 or key==ord('q'):
             server.show_flag = False
-            cv2.destroyWindow(wname)
+            cv2.destroyWindow(server.feed_id)
 
 @server.stopfunc
 def show_live_feed_cleanup(server):
     if server.show_flag:
-        cv2.destroyWindow(wname)
+        cv2.destroyWindow(server.feed_id)
 # CASETTE END: SHOW_LIVE_FEED
 
 @server

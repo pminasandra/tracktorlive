@@ -1,0 +1,8 @@
+{
+    "block_size": 63,
+    "offset": 32,
+    "min_area": 0,
+    "max_area": 5000,
+    "invert": 1,
+    "fps": 30.0
+}

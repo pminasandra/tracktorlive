@@ -97,12 +97,12 @@ and contrast has been boosted.
 
 Rename the created video to 'masked_ant.mp4'. Then, we can use the command
 `tracktorlive gui -f masked_ant.mp4 -o true-params.json` to accurately tune
-the tracking parameters.
+the tracking parameters (see Tutorial 3).
 
 Finally, we have created the file `track.py`, that uses all cassettes used here
 as well as the `write_recordings=True` option, to accurately track the ant.
 
-### Explanation
+## Explanation
 
 ![](tracked-ant.jpg)
 
@@ -114,3 +114,22 @@ cassettes:
 ![](pre_record_ant_fr_100.jpg)
 ![](post_cassettes.jpg)
 
+The file `track.py` takes the original, unedited video and applies the cassettes
+on the file. Then, with these 'better' frames, it will use the new better tuned
+tracking parameters to find the location of the ant.
+
+## Use-case
+
+As far as your goal is only to track animals, this tutorial is all you need.
+Instead of "ant.mp4", you will input your camera feed directly into the Tracktor
+server in `track.py`, by specifying the camera ID (e.g., 0). You will also then
+set the variable `realtime` to `True`. 
+
+For tuning the parameters after cassette application, you first need to record
+a brief (e.g., 10 min) video from your camera (see Tutorial 1). Then, you will
+use a file like `pre_record.py` on this short video to apply cassettes and
+obtain a new, modifed 10 min video. You will then use `tracktorlive gui` to tune
+tracking parameters with this modified video. However, as long as your setup
+remains unchanged, and as long as you apply these cassettes, the code in
+`track.py` can be changed to work directly with your camera feed, so that you
+can track from a live stream for an arbitrarily long interval.

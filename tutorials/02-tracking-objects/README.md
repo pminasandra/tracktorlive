@@ -8,7 +8,7 @@ tracking in this specific video. For this tutorial, we will directly use these
 parameter values, but in the next tutorial, you will learn how to actually
 arrive at those values with your own videos. You may also notice that the
 background outside the Petri plate has been masked (appears black). This was
-also done using TracktorLive, using the Circular Masking cassette.
+also done using TracktorLive, using the [Add Circular Mask](../../Library_Of_Casettes/Add_Circular_Mask/add_circular_mask.md) cassette.
 
 ![Tracks of the termites](tracks.png)
 

@@ -106,5 +106,11 @@ as well as the `write_recordings=True` option, to accurately track the ant.
 
 ![](tracked-ant.jpg)
 
+The performance of our tracking system is generally much improved. This is
+because our cassettes have clearly improved the 'visibility' of the ant and how
+to distinguish it from background noise. See below, frames with and without our
+cassettes:
 
+![](pre_record_ant_fr_100.jpg)
+![](record_ant_fr_100.jpg)
 

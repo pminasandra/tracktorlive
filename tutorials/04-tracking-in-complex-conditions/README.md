@@ -112,5 +112,5 @@ to distinguish it from background noise. See below, frames with and without our
 cassettes:
 
 ![](pre_record_ant_fr_100.jpg)
-![](record_ant_fr_100.jpg)
+![](post_cassettes.jpg)
 

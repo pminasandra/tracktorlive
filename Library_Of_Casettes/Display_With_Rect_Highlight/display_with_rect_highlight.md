@@ -1,0 +1,51 @@
+---
+title: display_with_rect_hl
+author: Pranav Minasandra
+description: Displays current tracking from the server in real-time. Highlights a chosen rectangular region. Press 'q' or <Esc> to close running display at any time.
+issues: Does not work on Max due to fork/spawn issues.
+---
+
+```python
+# CASSETTE BEGINS: DISPLAY_WITH_RECT_HL
+# DESCRIPTION: Displays current tracking from the server in real-time with a 
+#   rectangular highlight of a user-defined colour.
+#   Press 'q' or <Esc> to close running display at any time.
+# AUTHOR: Pranav Minasandra
+# USER DEFINED VARIABLES:
+dwrhl_top_left = (150, 50)
+dwrhl_bottom_right = (300, 200)
+dwrhl_color = (0, 255, 0)  # Green
+dwrhl_alpha = 0.5  # Transparency factor: 0.0 = fully transparent, 1.0 = fully opaque
+
+# KNOWN ISSUES: Does not work on Mac due to fork/spawn issues.
+
+@server.startfunc
+def dwrhl_setup(server):
+    server.show_flag = True
+    cv2.namedWindow(server.feed_id, cv2.WINDOW_NORMAL)
+
+# Draw rectangle on the overlay
+@server
+def dwrhl_show(server):
+    if not server.show_flag:
+        return
+    if server.framesbuffer[-1] is None:
+        return None
+    fr = server.framesbuffer[-1].copy()
+    fr2 = fr.copy()
+    cv2.rectangle(fr, dwrhl_top_left, dwrhl_bottom_right, dwrhl_color, thickness=-1)
+    cv2.addWeighted(fr, dwrhl_alpha, fr2, 1 - dwrhl_alpha, 0, fr2)
+
+    cv2.imshow(server.feed_id, fr2)
+    key = cv2.waitKey(1)
+
+    if key==27 or key==ord('q'):
+        server.show_flag = False
+        cv2.destroyWindow(server.feed_id)
+
+@server.stopfunc
+def dwrhl_cleanup(server):
+    if server.show_flag:
+        cv2.destroyWindow(server.feed_id)
+# CASSETTE ENDS: DISPLAY_WITH_RECT_HL
+```

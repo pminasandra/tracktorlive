@@ -6,7 +6,7 @@ issues: Does not work on Max due to fork/spawn issues.
 ---
 
 ```python
-# CASETTE BEGINS: SHOW_LIVE_FEED
+# CASSETTE BEGINS: SHOW_LIVE_FEED
 # DESCRIPTION: Displays current tracking from the server in real-time.
 #   Press 'q' or <Esc> to close running display at any time.
 # AUTHOR: Pranav Minasandra
@@ -34,5 +34,5 @@ def show_live_feed_show(server):
 def show_live_feed_cleanup(server):
     if server.show_flag:
         cv2.destroyWindow(server.feed_id)
-# CASETTE END: SHOW_LIVE_FEED
+# CASSETTE ENDS: SHOW_LIVE_FEED
 ```

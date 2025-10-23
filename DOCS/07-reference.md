@@ -16,6 +16,7 @@ arguments:
 | `keep_video`       | bool (default False) | Flag whether to store video frames in separate long-term memory.                                         |
 | `realtime`         | bool (default True)  | Whether current input is realtime or prerecorded.                                                        |
 | `timeout`          | int (default inf)    | How many seconds to wait before server is shut down.                                                     |
+| `use_kmeans`       | bool (default True)  | Whether to use the k-means algorithm to clean up centroids.                                              |
 | `write_recordings` | bool (default False) | Flag whether to write recorded tracking data to a CSV file on-the-fly.                                   |
 | `write_video`      | bool (default False) | Flag whether to write video frames to an MP4 file on-the-fly.                                            |
 | `width`            | int (default 640)    | Width of input video frames.                                                                             |

@@ -85,6 +85,7 @@ class TracktorServer:
                     port_num=281197,
                     realtime=True,
                     timeout=None,
+                    use_kmeans=True,
                     write_recordings=False,
                     write_video=False,
                     width=640,
@@ -105,6 +106,7 @@ class TracktorServer:
         self.n_ind = n_ind
         self.params = params
         self.port_num = port_num
+        self.use_kmeans = use_kmeans
         self.vidinput = vidinput
         self.write_recordings = mp.Value('b', write_recordings)
         self.write_video = mp.Value('b', write_video)
@@ -317,7 +319,7 @@ class TracktorServer:
                                     mot=self.n_ind>1,
                                     frame_index=self.frame_index,
                                     draw_circles=self.draw,
-                                    use_kmeans=True
+                                    use_kmeans=self.use_kmeans
                                 )
 
         self.semaphore.acquire()

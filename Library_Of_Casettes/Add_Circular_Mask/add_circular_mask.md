@@ -17,7 +17,7 @@ add_circular_mask_y = 267
 add_circular_mask_radius = 180
 # KNOWN ISSUES: None
 @server
-def add_mask(server):
+def add_circular_mask(server):
     frame = server.current_frame
     if frame is None:
         return

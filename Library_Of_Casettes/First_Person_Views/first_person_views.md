@@ -1,0 +1,162 @@
+---
+title: first_person_views
+author: Pranav Minasandra (testing ChatGPT 5)
+description: For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual.
+known_issues: Assumes data shape [tracks, 2, time] with pixel coords; uses warpAffine (black padding near borders).
+---
+
+# Display With Rect Highlight (Oriented, All Individuals)
+
+## What it does
+- For every individual (`0 … server.n_ind-1`), estimate heading from recent motion, smooth it, rotate the frame about the animal, and extract a centered `CROP_WIDTH × CROP_HEIGHT` crop so “forward” points to the top of the crop.
+- Writes per-individual videos: `centered-{feed_id}-indXX.mp4`.
+
+## Inputs & Assumptions
+- `server.get_data_and_clock()` returns `data` shaped `[tracks, 2, time]` with pixel-space `[x, y]`.
+- `server.framesbuffer[-1]` is the latest BGR (or grayscale) frame.
+- Globals (or configs): `CROP_WIDTH`, `CROP_HEIGHT`, `CROPPED_DIR`.
+- Server attributes (optional overrides):
+  - `dir_back_steps` (default `5`)
+  - `dir_smooth_alpha` (default `0.2`)
+  - `dir_speed_thresh` (default `1e-3`)
+  - `dir_max_deg_per_sec` (default `180.0`)
+  - `fps`
+
+## How it works (brief)
+1. **Direction:** `v = pos_now − pos_prev` using `BACK_STEPS`.
+2. **Stationary handling:** Reuse last known direction if speed < threshold.
+3. **Smoothing:** Exponential moving average on the **unit** direction + per-frame max rotation cap.
+4. **Affine crop:** Rotate about `(x, y)` so heading is “up”, then translate so `(x, y)` lands at crop center.
+5. **Per-individual writers:** Lazy-init and append frames.
+
+## Code
+
+```python
+@server
+def crop_all_oriented(server):
+    # ---- Tunables (can override via server attributes) ----
+    BACK_STEPS = getattr(server, "dir_back_steps", 5)            # uses -1 and -5 for heading
+    ALPHA = getattr(server, "dir_smooth_alpha", 0.2)             # EMA smoothing on direction
+    SPEED_THRESH = getattr(server, "dir_speed_thresh", 1e-3)     # stationary threshold (pixels/frame)
+    MAX_DEG_PER_SEC = getattr(server, "dir_max_deg_per_sec", 180.0)
+
+    # FPS → per-frame rotation cap (protects against sudden spins)
+    fps = max(float(getattr(server, "fps", 30.0)), 1.0)
+    MAX_DEG_PER_FRAME = MAX_DEG_PER_SEC / fps
+    max_rad = np.deg2rad(MAX_DEG_PER_FRAME)
+
+    # ---- State holders (persist between calls) ----
+    if not hasattr(server, "_orient"):
+        server._orient = {}              # IND -> unit vector heading (ux, uy)
+    if not hasattr(server, "_crop_writers"):
+        server._crop_writers = {}        # IND -> cv2.VideoWriter
+
+    # ---- Get data and latest frame ----
+    data, _ = server.get_data_and_clock()
+    if data.shape[2] <= BACK_STEPS:
+        return                           # not enough history to estimate heading
+
+    frame = server.framesbuffer[-1]
+    if frame is None:
+        return
+
+    # Ensure destination directory exists once
+    os.makedirs(CROPPED_DIR, exist_ok=True)
+
+    n_ind = int(getattr(server, "n_ind", data.shape[0]))
+
+    for IND in range(n_ind):
+        # --- Positions (expects [tracks, 2, time]) ---
+        pos_now  = data[IND, :, -1]                # [x, y] latest
+        pos_prev = data[IND, :, -BACK_STEPS]       # [x, y] a few frames ago
+
+        # Skip invalid
+        if np.any(np.isnan(pos_now)) or np.any(np.isnan(pos_prev)):
+            continue
+        if np.any(pos_now < 0) or np.any(pos_prev < 0):
+            continue
+
+        # --- Motion vector and speed ---
+        v = pos_now - pos_prev
+        speed = float(np.linalg.norm(v))
+
+        # Previous smoothed direction if available
+        has_prev = IND in server._orient
+
+        # Measurement direction (unit); reuse last if “stationary”
+        if speed >= SPEED_THRESH:
+            u_meas = v / (np.linalg.norm(v) + 1e-12)
+        else:
+            if not has_prev:
+                continue                # no direction yet for this IND
+            u_meas = server._orient[IND]
+
+        u_prev = server._orient[IND] if has_prev else u_meas
+
+        # --- (1) EMA smoothing on the unit circle ---
+        u_blend = (1.0 - ALPHA) * u_prev + ALPHA * u_meas
+        n = np.linalg.norm(u_blend)
+        u_blend = u_prev if n < 1e-12 else (u_blend / n)
+
+        # --- (2) Rate-limit the rotation change (deg/frame) ---
+        # Signed angle between u_prev and u_blend via atan2(cross, dot)
+        dot = float(np.clip(np.dot(u_prev, u_blend), -1.0, 1.0))
+        cross = float(u_prev[0]*u_blend[1] - u_prev[1]*u_blend[0])  # z of 2D cross
+        delta_rad = np.arctan2(cross, dot)
+
+        if abs(delta_rad) > max_rad:
+            step = np.sign(delta_rad) * max_rad
+            c, s = np.cos(step), np.sin(step)
+            u_smooth = np.array([c*u_prev[0] - s*u_prev[1],
+                                 s*u_prev[0] + c*u_prev[1]], dtype=float)
+        else:
+            u_smooth = u_blend
+
+        # Persist smoothed direction for this IND
+        server._orient[IND] = u_smooth
+
+        # --- Build oriented crop (forward points "up") ---
+        x, y = float(pos_now[0]), float(pos_now[1])
+        alpha_deg = np.degrees(np.arctan2(u_smooth[1], u_smooth[0]))
+        theta_deg = alpha_deg + 90.0  # rotate so heading is vertical upward in the crop
+
+        # Rotate about (x, y) and translate so (x, y) lands at crop center
+        M = cv2.getRotationMatrix2D((x, y), theta_deg, 1.0)
+        M[0, 2] += (CROP_WIDTH  / 2.0 - x)
+        M[1, 2] += (CROP_HEIGHT / 2.0 - y)
+
+        crop = cv2.warpAffine(
+            frame, M, (CROP_WIDTH, CROP_HEIGHT),
+            flags=cv2.INTER_LINEAR,
+            borderMode=cv2.BORDER_CONSTANT,
+            borderValue=0,  # black padding if near borders
+        )
+        if crop is None or crop.shape[:2] != (CROP_HEIGHT, CROP_WIDTH):
+            continue
+
+        # If grayscale, convert to BGR so VideoWriter is consistent
+        if len(crop.shape) == 2:
+            crop = cv2.cvtColor(crop, cv2.COLOR_GRAY2BGR)
+
+        # --- Per-individual writer (lazy init) ---
+        wr = server._crop_writers.get(IND)
+        if wr is None:
+            outpath = joinpath(CROPPED_DIR, f"centered-{server.feed_id}-ind{IND:02d}.mp4")
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')             # container/codec pairing for .mp4
+            wr = cv2.VideoWriter(outpath, fourcc, fps, (CROP_WIDTH, CROP_HEIGHT))
+            server._crop_writers[IND] = wr
+
+        wr.write(crop)
+
+
+@server.stopfunc
+def close_all_crop_writers(server):
+    """Release all per-individual writers on shutdown."""
+    if hasattr(server, "_crop_writers"):
+        for IND, wr in list(server._crop_writers.items()):
+            try:
+                if wr is not None:
+                    wr.release()
+            finally:
+                server._crop_writers[IND] = None
+        server._crop_writers = {}

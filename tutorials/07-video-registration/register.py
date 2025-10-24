@@ -82,45 +82,123 @@ def show_live_feed_cleanup(server):
 # CASETTE END: SHOW_LIVE_FEED
 
 @server
-def crop_to_center(server):
+def crop_all_oriented(server):
+    # ---- tunables ----
+    BACK_STEPS = getattr(server, "dir_back_steps", 5)         # use -1 and -5 for direction
+    ALPHA = getattr(server, "dir_smooth_alpha", 0.2)          # EMA on direction
+    MAX_DEG_PER_FRAME = getattr(server, "dir_max_deg_per_frame", 10.0)
+    SPEED_THRESH = getattr(server, "dir_speed_thresh", 1e-3)  # stationary threshold
+
+    # init shared state
+    if not hasattr(server, "_orient"):       server._orient = {}      # IND -> unit vec (ux, uy)
+    if not hasattr(server, "_crop_writers"): server._crop_writers = {}# IND -> cv2.VideoWriter
+
     data, _ = server.get_data_and_clock()
-    pos = data[4, :, -1]
-
-    if np.any(np.isnan(pos)):
+    # need enough history for BACK_STEPS
+    if data.shape[2] <= BACK_STEPS:
         return
 
-    if np.any(pos < 0):
-        return
-
-    x, y = int(pos[0]), int(pos[1])
     frame = server.framesbuffer[-1]
     if frame is None:
         return
-    h, w = frame.shape[:2]
 
-    x1 = max(x - CROP_WIDTH // 2, 0)
-    y1 = max(y - CROP_HEIGHT // 2, 0)
-    x2 = min(x1 + CROP_WIDTH, w)
-    y2 = min(y1 + CROP_HEIGHT, h)
-    x1 = max(x2 - CROP_WIDTH, 0)
-    y1 = max(y2 - CROP_HEIGHT, 0)
+    # ensure output dir exists once
+    os.makedirs(CROPPED_DIR, exist_ok=True)
 
-    crop = frame[y1:y2, x1:x2]
-    if crop.shape[:2] != (CROP_HEIGHT, CROP_WIDTH):
-        return
+    H, W = frame.shape[:2]
+    max_rad = np.deg2rad(MAX_DEG_PER_FRAME)
 
-    if not hasattr(server, "crop_writer") or server.crop_writer is None:
-        outpath = joinpath(CROPPED_DIR, f"centered-{server.feed_id}.mp4")
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        server.crop_writer = cv2.VideoWriter(outpath, fourcc, server.fps, (CROP_WIDTH, CROP_HEIGHT))
+    for IND in range(int(server.n_ind)):
+        # --- positions ---
+        pos_now  = data[IND, :, -1]           # [x, y]
+        pos_prev = data[IND, :, -BACK_STEPS]  # [x, y]
 
-    server.crop_writer.write(crop)
+        if np.any(np.isnan(pos_now)) or np.any(np.isnan(pos_prev)):
+            continue
+        if np.any(pos_now < 0) or np.any(pos_prev < 0):
+            continue
+
+        v = pos_now - pos_prev
+        speed = float(np.linalg.norm(v))
+
+        # previous orientation (if any)
+        has_prev = IND in server._orient
+
+        # measurement direction
+        if speed >= SPEED_THRESH:
+            u_meas = v / (np.linalg.norm(v) + 1e-12)
+        else:
+            if not has_prev:
+                continue  # no direction yet for this IND
+            u_meas = server._orient[IND]  # keep last
+
+        u_prev = server._orient[IND] if has_prev else u_meas
+
+        # --- (1) EMA smoothing on unit circle ---
+        u_blend = (1.0 - ALPHA) * u_prev + ALPHA * u_meas
+        n = np.linalg.norm(u_blend)
+        u_blend = (u_prev if n < 1e-12 else u_blend / n)
+
+        # --- (2) rate limit rotation (deg/frame) ---
+        dot = float(np.clip(np.dot(u_prev, u_blend), -1.0, 1.0))
+        cross = float(u_prev[0]*u_blend[1] - u_prev[1]*u_blend[0])
+        delta_rad = np.arctan2(cross, dot)
+        if abs(delta_rad) > max_rad:
+            step = np.sign(delta_rad) * max_rad
+            c, s = np.cos(step), np.sin(step)
+            u_smooth = np.array([c*u_prev[0] - s*u_prev[1],
+                                 s*u_prev[0] + c*u_prev[1]], dtype=float)
+        else:
+            u_smooth = u_blend
+
+        # store for next frame
+        server._orient[IND] = u_smooth
+
+        # --- build oriented crop ---
+        x, y = float(pos_now[0]), float(pos_now[1])
+        alpha_deg = np.degrees(np.arctan2(u_smooth[1], u_smooth[0]))
+        theta_deg = alpha_deg + 90.0  # make "forward" point up
+
+        # rotate about (x,y) and center into crop canvas
+        M = cv2.getRotationMatrix2D((x, y), theta_deg, 1.0)
+        M[0, 2] += (CROP_WIDTH  / 2.0 - x)
+        M[1, 2] += (CROP_HEIGHT / 2.0 - y)
+
+        crop = cv2.warpAffine(
+            frame, M, (CROP_WIDTH, CROP_HEIGHT),
+            flags=cv2.INTER_LINEAR,
+            borderMode=cv2.BORDER_CONSTANT,
+            borderValue=0,
+        )
+        if crop is None or crop.shape[:2] != (CROP_HEIGHT, CROP_WIDTH):
+            continue
+
+        # grayscale → BGR for consistency
+        if len(crop.shape) == 2:
+            crop = cv2.cvtColor(crop, cv2.COLOR_GRAY2BGR)
+
+        # --- lazy-init per-individual writer ---
+        wr = server._crop_writers.get(IND)
+        if wr is None:
+            outname = f"centered-{server.feed_id}-ind{IND:02d}.mp4"
+            outpath = joinpath(CROPPED_DIR, outname)
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # better default for .mp4
+            wr = cv2.VideoWriter(outpath, fourcc, server.fps, (CROP_WIDTH, CROP_HEIGHT))
+            server._crop_writers[IND] = wr
+
+        wr.write(crop)
+
 
 @server.stopfunc
-def close_crop_writer(server):
-    if hasattr(server, "crop_writer") and server.crop_writer is not None:
-        server.crop_writer.release()
-        server.crop_writer = None
+def close_all_crop_writers(server):
+    if hasattr(server, "_crop_writers"):
+        for IND, wr in list(server._crop_writers.items()):
+            try:
+                if wr is not None:
+                    wr.release()
+            finally:
+                server._crop_writers[IND] = None
+        server._crop_writers = {}
 
 trl.run_trsession(server, semm)
 

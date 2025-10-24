@@ -1,54 +1,6 @@
-Proximity-Based Video Chunking
-==============================
+# TracktorLive Tutorial 7: Video chunking
 
-This example demonstrates how to capture short video segments only when
-tracked individuals come within a specified distance of each other. It
-is useful in scenarios where interactions are rare and continuous
-recording would be wasteful.
-
-Purpose
--------
-
-The system monitors position data extracted from video input and
-automatically saves short clips to disk when any two individuals are
-close together. This allows for real-time filtering and efficient
-storage of only behaviorally relevant video.
-
-How It Works
-------------
-
-1.  A video is analyzed frame by frame using real-time tracking.
-2.  A user-defined function periodically checks the distance between
-    individuals.
-3.  When the distance falls below a configurable threshold, recording is
-    enabled. When they move apart, recording stops and the saved frames
-    are written to a file.
-4.  At the end of the input (if using video), a final check ensures any
-    remaining recording is saved.
-
-Output
-------
-
-Chunks are saved into the `ultralisks-chunked/` directory as individual
-video files. Each file corresponds to a brief period of close proximity.
-
-Usage
------
-
-Place your input video (e.g. `ultralisks.mp4`) and tracking parameter
-file (e.g. `brood-war-params.json`) in the working directory. Then run:
-
-    python chunker.py
-
-You can adjust the distance threshold and output directory within the
-script.
-
-Real-World Applications
------------------------
-
-- Performing more advanced video analyses on chunks can be faster than the
-  alternative
-- Great for picking only interactions
+-------------------------
 
 # Disclaimer:
 This example includes a video excerpt from StarCraft: Brood War (1998), developed and published by Blizzard Entertainment,
@@ -57,3 +9,38 @@ Blizzard Entertainment. No affiliation or endorsement is implied.
 
 The footage is used under fair use provisions for research and educational display of proximity-based video chunking systems.
 
+-------------------------
+
+## Goal
+
+Many times, we are recording pairs of animals to study particular behaviours.
+For instance, you may record a pair of animals for 20 days but only care about
+the three hours that they interact with each other. Or you may set up animals in
+a holding area, but only care about the times they enter an experimental arena.
+We need a system that can only record and save chunks of videos when interesting
+things are happening.
+
+Here, we have a video of a pair of ultralisks from the classic game Starcraft:
+Brood War. 
+
+https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/ultralisks.mp4
+
+Suppose we only care to detect these animals when they are less than 300px apart
+from each other. 
+
+## Method
+
+We will use the [Record When Together])(Library_Of_Casettes/Record_When_Together/record_when_together.md) cassette to get this use,
+where we can set the threshold proximity distance of animals for video recording
+to begin. 
+
+You can see that the below three chunks are automatically detected and extracted:
+
+https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk1.mp4
+https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk2.mp4
+https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk3.mp4
+
+While we have done this with a video stream, it is easy to replicate with
+a realtime feed by changing the declaration of the server. In the
+trl.spawn_trserver segment, change the name of the video to the index of the
+camera, and set `realtime` to False.

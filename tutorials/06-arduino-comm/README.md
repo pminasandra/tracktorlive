@@ -11,7 +11,7 @@ create dynamic responses to the actions of animals in your lab environment. In
 this tutorial, we will demonstrate three examples (of which we will explain one
 in detail). In the first two examples, we will turn on a red LED when an animal
 gets inside a region of interest. In the last example, we will open a door when
-a pair of animals are within the same region of interest.
+a pair of animals are both within the same region of interest.
 
 
 ## Method
@@ -57,3 +57,24 @@ transmitted to the Arduino, which uses this information to light up an LED (see
 
 As you can see in the above GIF, the LED in the bottom right of the GIF always
 shines briefly whenever the ant enters the green rectangle.
+
+As a second, more interactive example, we would like the Arduino to open
+a 'door' for a pair of pill-bugs when they both enter the same area.
+The file `door_pillbug.py` transmits the characters 'm' and 'k' to instruct an
+Arduino to either open or close a door respectively. This example has many
+additional customisations, and the reader is encouraged to read both the python
+script and the Arduino script `openDoorsCopy.ino`. Below is a GIF showing this
+in action:
+
+
+https://github.com/user-attachments/assets/009591e2-2d35-4dc5-a173-55abe1ab010a
+
+
+## Use-cases
+
+As you can imagine, connecting an Arduino to a computer and programming it to
+dynamically respond to animals' positions can be of great use. We have already
+discussed several use-cases with potential users of TracktorLive, such as in
+automatic animal entrance/exit management in specific arenas, habituation
+experiments when combined with food dispensing systems, and experiments to study
+cognitive abilities.

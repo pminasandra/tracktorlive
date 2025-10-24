@@ -73,6 +73,7 @@ class TracktorServer:
     shared memory for data exchange, and optional recording and visualization.
     """
 
+    _codec = 'mp4v' if tracktorlive.rcParams['file_format'] == 'mp4' else 'XVID'
     def __init__(self,
                     vidinput,
                     params,
@@ -256,7 +257,7 @@ class TracktorServer:
         Does a parallelisation-proof vidout setup.
         """
 
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        fourcc = cv2.VideoWriter_fourcc(*_codec)
         vidout = cv2.VideoWriter(
                                 filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
                                 fourcc = fourcc,
@@ -363,7 +364,7 @@ class TracktorServer:
             print(",".join(entry), file=self.recout, flush=True)
         self.semaphore.release()
 
-    def dumpvideo(self, outfile=None, codec='XVID'):
+    def dumpvideo(self, outfile=None, codec=_codec):
         """Writes recorded video frames to file, if recording was enabled."""
         if outfile is not None:
             self.semaphore.acquire()

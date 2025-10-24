@@ -79,10 +79,10 @@ def _out_rect(locs, right=right):
     
 # We will now write a function to do the chunking based on this distance:
 # Global variable to track how long animals have been apart
-frames_outside_thresh = 0
+frames_outside_thresh = mp.Value('d', 0)
 MIN_FRAMES_OUTSIDE = 30  # minimum frames animals must be apart to stop recording
 
-frames_inside_thresh = 0
+frames_inside_thresh = mp.Value('d', 0)
 MIN_FRAMES_INSIDE = 30  # minimum frames animals must nearby to start recording
 
 @server
@@ -92,9 +92,9 @@ def chunking(server):
     curr_vals = data[:,:,-1]
     prev_vals = data[:,:,-2]
 
-    if np.any(curr_vals < 0.0):
-        # unknown location
+    if np.any(curr_vals < 0.0):# unknown location
         return None
+
     if _out_rect(curr_vals):#ant just moved out the rectangle
         frames_inside_thresh = 0  # reset counter: they're close
         frames_outside_thresh += 1

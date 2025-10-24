@@ -39,15 +39,11 @@ to begin.
 
 You can see that the below three chunks are automatically detected and extracted:
 
+![](chunk1.gif)
 
+![](chunk2.gif)
 
-https://github.com/user-attachments/assets/897917eb-a24e-4db1-a7bf-b12a24b0fd8a
-
-https://github.com/user-attachments/assets/d457172c-bc12-4e1a-8fd4-444b2b8a13ea
-
-https://github.com/user-attachments/assets/221be861-37ee-4c09-a1c1-0f6c4d4ef106
-
-
+![](chunk3.gif)
 
 While we have done this with a video stream, it is easy to replicate with
 a realtime feed by changing the declaration of the server. In the

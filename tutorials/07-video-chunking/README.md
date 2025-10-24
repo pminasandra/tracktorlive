@@ -23,7 +23,10 @@ things are happening.
 Here, we have a video of a pair of ultralisks from the classic game Starcraft:
 Brood War. 
 
-https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/ultralisks.mp4
+
+https://github.com/user-attachments/assets/8b229e67-c04e-4395-9f08-17f52600fa53
+
+
 
 Suppose we only care to detect these animals when they are less than 300px apart
 from each other. 
@@ -36,9 +39,15 @@ to begin.
 
 You can see that the below three chunks are automatically detected and extracted:
 
-https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk1.mp4
-https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk2.mp4
-https://github.com/pminasandra/tracktorlive/blob/master/tutorials/07-video-chunking/chunk3.mp4
+
+
+https://github.com/user-attachments/assets/897917eb-a24e-4db1-a7bf-b12a24b0fd8a
+
+https://github.com/user-attachments/assets/d457172c-bc12-4e1a-8fd4-444b2b8a13ea
+
+https://github.com/user-attachments/assets/221be861-37ee-4c09-a1c1-0f6c4d4ef106
+
+
 
 While we have done this with a video stream, it is easy to replicate with
 a realtime feed by changing the declaration of the server. In the

@@ -5,8 +5,10 @@ Here are all the cassettes available as of now.
 | Title | Description |
 |---|---|
 | [Add Circular Mask](Add_Circular_Mask/add_circular_mask.md) | Masks everything except a circle of specified position and radius |
+| [Add Custom Mask](Add_Custom_Mask/add_custom_mask.md) | Add a custom mask to every frame based on user-provided image file |
 | [Add Rectangular Mask](Add_Rectangular_Mask/add_rectangular_mask.md) | Masks everything except a rectangle of specified vertices |
 | [Boost Contrast](Boost_Contrast/boost_contrast.md) | Brightness and contrast control |
+| [Channel Select](Channel_Select/channel_select.md) | Preserves only one of the BGR channels |
 | [Display With Circ Hl](Display_With_Circ_Highlight/display_with_rect_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen circular region. Press 'q' or <Esc> to close running display at any time |
 | [Display With Rect Hl](Display_With_Rect_Highlight/display_with_rect_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen rectangular region. Press 'q' or <Esc> to close running display at any time |
 | [Extract Specified Frames](Extract_Specified_Frames/extract_specified_frames.md) | Saves as jpg all frames at specified indices |

@@ -2,7 +2,7 @@
 title: first_person_views
 author: Pranav Minasandra (testing ChatGPT 5)
 description: For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual.
-known_issues: Assumes data shape [tracks, 2, time] with pixel coords; uses warpAffine (black padding near borders).
+issues: rotates frames a bit too much sometimes
 ---
 
 # Display With Rect Highlight (Oriented, All Individuals)
@@ -32,6 +32,11 @@ known_issues: Assumes data shape [tracks, 2, time] with pixel coords; uses warpA
 ## Code
 
 ```python
+# CASSETTE BEGINS: FIRST_PERSON_VIEWS
+# DESCRIPTION: Generates cropped, rotated videos assuming birds-eye view
+# following each separate individual
+# AUTHOR: Pranav Minasandra (using ChatGPT 5)
+# KNOWN_ISSUES: rotates frames a bit too much sometimes
 @server
 def crop_all_oriented(server):
     # ---- Tunables (can override via server attributes) ----
@@ -160,3 +165,4 @@ def close_all_crop_writers(server):
             finally:
                 server._crop_writers[IND] = None
         server._crop_writers = {}
+# CASSETTE ENDS: FIRST_PERSON_VIEWS

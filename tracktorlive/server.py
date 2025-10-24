@@ -257,7 +257,7 @@ class TracktorServer:
         Does a parallelisation-proof vidout setup.
         """
 
-        fourcc = cv2.VideoWriter_fourcc(*_codec)
+        fourcc = cv2.VideoWriter_fourcc(*TracktorServer._codec)
         vidout = cv2.VideoWriter(
                                 filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
                                 fourcc = fourcc,
@@ -364,7 +364,7 @@ class TracktorServer:
             print(",".join(entry), file=self.recout, flush=True)
         self.semaphore.release()
 
-    def dumpvideo(self, outfile=None, codec=_codec):
+    def dumpvideo(self, outfile=None, codec=TracktorServer._codec):
         """Writes recorded video frames to file, if recording was enabled."""
         if outfile is not None:
             self.semaphore.acquire()

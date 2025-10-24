@@ -37,13 +37,19 @@ server, semm = trl.spawn_trserver("./ultralisks.mp4",
                                     buffer_size=1#just need a second before interactions
                                 )
 
-THRESH_APPROACH_DIST = 300 #px
-THRESH_APPROACH_DIST2 = THRESH_APPROACH_DIST**2 #px**2
+# CASSETTE BEGINS: RECORD_WHEN_TOGETHER
+# DESCRIPTION: When two animals are close together, record video only then.
+# AUTHOR: Pranav Minasandra
+# USER DEFINED VARIABLES:
+THRESH_APPROACH_DIST = 300 #px: record only when animals closer than this
+THRESH_MIN_DIST = 100 #px: but don't record when animals detected closer than this!
 
-THRESH_MIN_DIST = 100
+
+# Internals
 THRESH_MIN_DIST2 = THRESH_MIN_DIST**2
+THRESH_APPROACH_DIST2 = THRESH_APPROACH_DIST**2 #px**2
 @server
-def chunking(server):
+def record_when_together(server):
     data, _ = server.get_data_and_clock()
     curr_vals = data[:,:,-1]
 
@@ -54,8 +60,8 @@ def chunking(server):
     dist2 = ((curr_vals[0,:] - curr_vals[1,:])**2).sum()
     if THRESH_MIN_DIST2 < dist2 <= THRESH_APPROACH_DIST2:
         if len(server.recorded_frames) == 0:#nothing stored yet?
-            print(dist2)
             server.keep_video.value = True
+
     elif dist2 > THRESH_APPROACH_DIST2:
         if len(server.recorded_frames) > 0:
             server.keep_video.value=False
@@ -63,11 +69,12 @@ def chunking(server):
             server.dumpvideo(joinpath('ultralisks-chunked', fname))
 
 # We need to handle end-of-file events
-@server.stopfunc#adding this decorator makes it a server-side termination functionality
+@server.stopfunc
 def final_chunk(server):
     if len(server.recorded_frames) > 0:
         server.keep_video.value=False
         fname = f'chunk-{ulid.ULID()}.{trl.rcParams["file_format"]}'
         server.dumpvideo(joinpath('ultralisks-chunked', fname))
+# CASSETTE ENDS: RECORD_WHEN_TOGETHER
 
 trl.run_trsession(server, semm)

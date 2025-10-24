@@ -37,6 +37,13 @@ issues: rotates frames a bit too much sometimes
 # following each separate individual
 # AUTHOR: Pranav Minasandra (using ChatGPT 5)
 # KNOWN_ISSUES: rotates frames a bit too much sometimes
+# USER SPECIFIED PARAMETERS:
+
+CROP_WIDTH, CROP_HEIGHT = 200, 200
+CROPPED_DIR = "centered-clips"
+
+os.makedirs(CROPPED_DIR, exist_ok=True)
+
 @server
 def crop_all_oriented(server):
     # ---- Tunables (can override via server attributes) ----

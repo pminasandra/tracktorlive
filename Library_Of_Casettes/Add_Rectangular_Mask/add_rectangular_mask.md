@@ -1,5 +1,5 @@
 ---
-title: add_circular_mask
+title: add_rectangular_mask
 author: Pranav Minasandra and Vivek H Sridhar
 description: Masks everything except a rectangle of specified vertices.
 known_issues: None.

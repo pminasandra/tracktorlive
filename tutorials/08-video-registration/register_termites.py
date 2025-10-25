@@ -81,6 +81,7 @@ def show_live_feed_cleanup(server):
         cv2.destroyWindow(server.feed_id)
 # CASETTE END: SHOW_LIVE_FEED
 
+
 # CASSETTE BEGINS: FIRST_PERSON_VIEWS
 # DESCRIPTION: Generates cropped, rotated videos assuming birds-eye view
 # following each separate individual
@@ -91,7 +92,7 @@ def crop_all_oriented(server):
     # ---- Tunables (can override via server attributes) ----
     BACK_STEPS = getattr(server, "dir_back_steps", 5)            # uses -1 and -5 for heading
     ALPHA = getattr(server, "dir_smooth_alpha", 0.2)             # EMA smoothing on direction
-    SPEED_THRESH = getattr(server, "dir_speed_thresh", 1e-3)     # stationary threshold (pixels/frame)
+    SPEED_THRESH = getattr(server, "dir_speed_thresh", 10)     # stationary threshold (pixels/frame)
     MAX_DEG_PER_SEC = getattr(server, "dir_max_deg_per_sec", 180.0)
 
     # FPS → per-frame rotation cap (protects against sudden spins)

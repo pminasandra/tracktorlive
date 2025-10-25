@@ -42,7 +42,7 @@ Finally, we are prepared to record the video.
 Run the command
 
 ```bash
-tracktorlive track --camera 0 params.json --timeout 600
+tracktorlive track --camera 0 --write-vid params.json --timeout 600
 ```
 
 The `--timeout 600` ensures that the server exits after the specified number of

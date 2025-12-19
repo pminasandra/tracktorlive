@@ -17,5 +17,6 @@ Here are all the cassettes available as of now.
 | [Record When Together](Record_When_Together/record_when_together.md) | When two animals are close together, record video only then |
 | [Run Command On Condition](Run_Command_On_Condition/run_command_on_condition.md) | Runs a shell command when a function returns True, respecting a time based cooldown rule |
 | [Show Live Feed](Show_Live_Feed/show_live_feed.md) | Displays current tracking from the server in real-time. Press 'q' or <Esc> to close running display at any time |
+| [Timesync](Timesync/timesync.md) | Creates a parquet file of time.time() clock, useful for ms level sync |
 
 ## Contributing Cassettes

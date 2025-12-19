@@ -5,6 +5,11 @@ description: Creates a parquet file of time.time() clock, useful for ms level sy
 known_issues: not hardware level clock info.
 ---
 
+On a computer with an active [Network Time
+Protocol](https://en.wikipedia.org/wiki/Network_Time_Protocol), frames-capture
+times are stored in absolute UTC. This is useful for interacting with other
+sensor streams such as accelerometers and audio.
+
 ```python
 # CASSETTE BEGINS: TIMESYNC
 # AUTHOR: Pranav Minasandra

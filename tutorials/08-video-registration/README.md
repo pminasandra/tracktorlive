@@ -1,12 +1,12 @@
-# TracktorLive Tutorial 8: Video registration
+# TracktorLive Tutorial 8: Video centering
 
 -------------------------
 
 # Disclaimer:
 
-As an experiment, we have used the GenAI, ChatGPT 5, to write one cassette for
-us. This is not to be taken as advice or endorsement of this or other Large
-Language Models in scientific coding.
+In this tutorial, we used ChatGPT 5 to write a cassette for us. However, the
+tutorial should not be taken as an endorsement of the use of this or other Large
+Language Models (LLMs) for scientific coding.
 
 -------------------------
 
@@ -17,8 +17,9 @@ We will go back to the video of 8 termites we encountered in Tutorial 2.
 ![](termite_video.gif)
 
 To truly focus on the behaviour of each individual, we would like to program
-a birds-eye pseudo-camera to follow each individual around as it moves, and
-store this birds-eye cropped video feed.
+a top-down chase pseudocamera to follow each individual around as it moves, and
+store this birds-eye cropped video feed. Furthermore, the pseudocamera should be
+rotated so that the focal animal always appears to move 'upwards'.
 
 ## Method
 

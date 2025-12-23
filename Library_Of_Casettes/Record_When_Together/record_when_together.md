@@ -6,17 +6,21 @@ known_issues: None.
 ---
 
 ```python
+
 # CASSETTE BEGINS: RECORD_WHEN_TOGETHER
 # DESCRIPTION: When two animals are close together, record video only then.
 # AUTHOR: Pranav Minasandra
 # USER DEFINED VARIABLES:
 THRESH_APPROACH_DIST = 300 #px: record only when animals closer than this
 THRESH_MIN_DIST = 100 #px: but don't record when animals detected closer than this!
+THRESH_STOP_DIST = 400 #px: stop recording when they are farther away than this.
 
 
 # Internals
 THRESH_MIN_DIST2 = THRESH_MIN_DIST**2
 THRESH_APPROACH_DIST2 = THRESH_APPROACH_DIST**2 #px**2
+THRESH_STOP_DIST2 = THRESH_STOP_DIST**2
+
 @server
 def record_when_together(server):
     data, _ = server.get_data_and_clock()
@@ -31,7 +35,7 @@ def record_when_together(server):
         if len(server.recorded_frames) == 0:#nothing stored yet?
             server.keep_video.value = True
 
-    elif dist2 > THRESH_APPROACH_DIST2:
+    elif dist2 > THRESH_STOP_DIST2:#when animals go far away again
         if len(server.recorded_frames) > 0:
             server.keep_video.value=False
             fname = f'chunk-{ulid.ULID()}.{trl.rcParams["file_format"]}'

@@ -22,7 +22,7 @@ from .paramfixing import gui_set_params as get_params_from_gui
 from . import config
 
 __version__ = "0.9.0"
-__author__ = "Pranav Minasandra, Isaac Planas-Sitja, Dominique Roche, Vivek H Sridhar" #FIXME
+__author__ = "Pranav Minasandra, Isaac Planas-Sitja, Dominique Roche, Vivek H Sridhar"
 __license__ = "MIT"
 __url__ = "https://github.com/pminasandra/tracktorlive"
 
@@ -33,7 +33,7 @@ __all__ = ['TracktorServer', 'TracktorClient',
             ]
 
 APP_NAME = "tracktorlive"
-APP_AUTHOR = "Dominique Roche, Isaac Planas-Sitjà, Pranav Minasandra, Vivek H Sridhar"# Dom, Isaac, Pranav, Vivek
+APP_AUTHOR = "Pranav Minasandra, Isaac Planas-Sitjà, Dominique Roche, Vivek H Sridhar"
 FEEDS_DIR = joinpath(
                 pfd.user_data_dir(appname=APP_NAME, appauthor=APP_AUTHOR),
                 "LiveFeeds"

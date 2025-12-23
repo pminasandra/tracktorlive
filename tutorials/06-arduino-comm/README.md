@@ -5,26 +5,33 @@ necessary to access an Arduino.
 
 ## Goal
 
+To automatically message an Arduino board when a condition is met.
 An [Arduino](https://www.arduino.cc/) is a device that can provide an interface
 between your computer and a circuit designed by you. This is one way you can
 create dynamic responses to the actions of animals in your lab environment. In
-this tutorial, we will demonstrate three examples (of which we will explain one
-in detail). In the first two examples, we will turn on a red LED when an animal
-gets inside a region of interest. In the last example, we will open a door when
-a pair of animals are both within the same region of interest.
+this tutorial, we will demonstrate three examples.
+In the first two examples, we will briefly turn on a red LED when an animal (an
+ant and a mouse respectively)
+enters a region of interest. We will explain the first example in detail.
+In the third example, we will open a door when
+a pair of animals (pillbugs) are both located in the same region of interest.
 
 
 ## Method
 
-We will make use of the [Message Arduino](../../Library_Of_Casettes/Message_Arduino/message_arduino.md) cassette
-to run this tutorial. 
-The python script automatically handles conveying single characters to
-a connected Arduino board. We have also provided `.ino` scripts to be flashed
-onto the Arduino itself, by which we tell that device how to respond to incoming
-information from TracktorLive.
+We will make use of the [Message
+Arduino](../../Library_Of_Casettes/Message_Arduino/message_arduino.md) cassette
+to run this tutorial. The python scripts automatically handle conveying single
+characters (a letter, number, or symbol) 
+to a connected Arduino board. We have also provided the `.ino` scripts to
+be flashed onto the Arduino itself, by which the Arduino is programmed to respond
+to incoming information from TracktorLive. (If you would like to learn more
+about flashing code onto an Arduino, or in general, about how one uses an
+Arduino, refer to the tutorials on the [offical Arduino
+website](https://docs.arduino.cc/learn/).)
 
-Consider the file `stimulus_ant.py`, where an LED is to be turned on each time
-an ant steps into a circle.
+Consider the python `stimulus_ant.py`, where an LED is to be turned on each time
+an ant enters a circlular region of interest in its arena.
 In general, the Message Arduino cassette requires a user-selected
 `condition_func` function, which returns either a single character or `None`.
 If it receives a character, it will automatically transmit it to the connected
@@ -49,22 +56,26 @@ def condition_func(data, clock):
     return None
 ```
 
-When the file is run, each time the ant enters the circle, the character 'm' is
+When the python script is run, each time the ant enters the circle, the character 'm' is
 transmitted to the Arduino, which uses this information to light up an LED (see
 `led_trigger.ino`).
 
 ![](ant_led.gif)
 
-As you can see in the above GIF, the LED in the bottom right of the GIF always
-shines briefly whenever the ant enters the green rectangle.
+As you can see in the above GIF, the LED in the bottom-left of the GIF always
+shines briefly whenever the ant enters the green circle.
 
-As a second, more interactive example, we would like the Arduino to open
-a 'door' for a pair of pill-bugs when they both enter the same area.
+We replicate this example with a mouse with the code provided in
+`stimulus_mouse.py`.
+
+As a third, more interactive example, we would like the Arduino to open
+a 'door' for a pair of pill-bugs when they are both located in the same
+user-specified region of interest.
 The file `door_pillbug.py` transmits the characters 'm' and 'k' to instruct an
-Arduino to either open or close a door respectively. This example has many
-additional customisations, and the reader is encouraged to read both the python
-script and the Arduino script `openDoorsCopy.ino`. Below is a GIF showing this
-in action:
+Arduino to either open or close a door respectively (see video below). This example has many
+additional customisations, and we encourage you to read both the python
+script and the Arduino script `openDoorsCopy.ino` to understand how you can customise them to your
+needs. 
 
 
 https://github.com/user-attachments/assets/009591e2-2d35-4dc5-a173-55abe1ab010a
@@ -75,6 +86,7 @@ https://github.com/user-attachments/assets/009591e2-2d35-4dc5-a173-55abe1ab010a
 As you can imagine, connecting an Arduino to a computer and programming it to
 dynamically respond to animals' positions can be of great use. We have already
 discussed several use-cases with potential users of TracktorLive, such as in
-automatic animal entrance/exit management in specific arenas, habituation
-experiments when combined with food dispensing systems, and experiments to study
-cognitive abilities.
+automatic animal entrance/exit management in specific arenas, food dispensing
+systems in habituation experiments, and experiments to study cognitive abilities.
+An Arduino can also prove useful in several situations to improve experimenters'
+ease-of-life for repetitive experiments.

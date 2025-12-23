@@ -19,6 +19,16 @@ or in some cases,
 python3 <filename>
 ```
 
+## Important notes
+
+- Commands should be run as they are given, unless explicitly specified.
+- Any text in command descrpitions between angular brackets, `<like this>`, is meant to be replaced.
+- Any text in command descrpitions between square brackets, `[like this]`, is
+  optional.
+- We recommend going through all tutorials.
+
+## List of tutorials
+
 1. [Recording a video](./01-recording-video/): Use TracktorLive to record
    a simple 10 minute video from the command line.
 2. [Tracking objects](./02-tracking-object/): Track the positions of eight termites

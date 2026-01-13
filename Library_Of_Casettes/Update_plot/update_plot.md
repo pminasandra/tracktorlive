@@ -1,5 +1,5 @@
 ---
-title: record_when_together
+title: update_plot
 author: Isaac Planas-Sitjà
 description: Displays (and saves) a plot every few seconds. Useful to monitor data in real time.
 known_issues: None.

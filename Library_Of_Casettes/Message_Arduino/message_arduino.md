@@ -34,7 +34,7 @@ def find_arduino_port():
     for port in ports:
         desc = port.description.lower()
         manu = (port.manufacturer or "").lower()
-        if 'arduino' in desc or 'arduino' in manu:
+        if 'ttyUSB' in port.device or 'ser' in desc or 'arduino' in manu or 'arduino' in desc:
             return port.device
     raise RuntimeError('No arduino device could be found')
 

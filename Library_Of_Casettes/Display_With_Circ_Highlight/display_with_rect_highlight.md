@@ -24,7 +24,7 @@ def dwchl_setup(server):
     server.show_flag = True
     cv2.namedWindow(server.feed_id, cv2.WINDOW_NORMAL)
 
-# Draw rectangle on the overlay
+# Draw circle on the overlay
 @server
 def dwchl_show(server):
     if not server.show_flag:

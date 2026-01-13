@@ -10,6 +10,7 @@ known_issues: None.
 # CASSETTE BEGINS: RECORD_WHEN_TOGETHER
 # DESCRIPTION: When two animals are close together, record video only then.
 # AUTHOR: Pranav Minasandra
+# NOTES: If there is a lot of noise, a rule can be defined to record only when animals have been together for more than X frames (MIN_FRAMES_TOGETHER = 30).
 # USER DEFINED VARIABLES:
 THRESH_APPROACH_DIST = 300 #px: record only when animals closer than this
 THRESH_MIN_DIST = 100 #px: but don't record when animals detected closer than this!

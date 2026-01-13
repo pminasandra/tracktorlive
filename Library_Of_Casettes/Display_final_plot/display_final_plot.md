@@ -1,4 +1,3 @@
-
 ---
 title: display_final_plot
 author: Isaac Planas-Sitjà

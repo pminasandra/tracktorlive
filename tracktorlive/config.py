@@ -7,7 +7,7 @@ from pathlib import Path
 
 defaults = {
     'fourcc_read_codec': 'YUYV',
-    'file_format': 'avi'
+    'file_format': 'mp4'
 }
 
 config_file = Path.home()/".trlrc"

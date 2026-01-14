@@ -10,8 +10,8 @@ known_issues: none
 # AUTHOR: Pranav Minasandra
 # DESCRIPTION: Build a time-lapse by subsampling frames into a custom buffer and writing once at the end.
 # USER SPECIFIABLE DETAILS
-TOTAL_REAL_TIME = 600.0          # seconds of real time covered
-TIMELAPSE_VIDEO_DURATION = 30.0  # seconds of output video
+TOTAL_REAL_TIME = 60.0          # seconds of real time covered
+TIMELAPSE_VIDEO_DURATION = 5.0  # seconds of output video
 TIMELAPSE_OUTFILE = "timelapse.mp4"
 # KNOWN ISSUES: None
 
@@ -19,7 +19,7 @@ TIMELAPSE_OUTFILE = "timelapse.mp4"
 def timelapse_start(server):
     server._timelapse_frames = []
     server._timelapse_last_t = None
-    server._timelapse_dt = float(TOTAL_REAL_TIME) / float(TIMELAPSE_VIDEO_DURATION)
+    server._timelapse_dt = float(TOTAL_REAL_TIME) / float(TIMELAPSE_VIDEO_DURATION * server.fps)
 
 @server
 def timelapse(server):
@@ -39,6 +39,8 @@ def timelapse(server):
 def timelapse_end(server):
     import cv2
     import numpy as np
+    import os.path
+    from os.path import join as joinpath
 
     frames = getattr(server, "_timelapse_frames", [])
     if len(frames) == 0:
@@ -48,7 +50,11 @@ def timelapse_end(server):
     out_fps = max(1.0, len(frames) / float(TIMELAPSE_VIDEO_DURATION))
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    vw = cv2.VideoWriter(TIMELAPSE_OUTFILE, fourcc, out_fps, (W, H))
+    outfile = joinpath(server.feed_id, TIMELAPSE_OUTFILE)
+    if not os.path.exists(server.feed_id):
+        import os
+        os.makedirs(server.feed_id)
+    vw = cv2.VideoWriter(outfile, fourcc, out_fps, (W, H))
 
     for f in frames:
         if f is None:

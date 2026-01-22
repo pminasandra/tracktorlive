@@ -38,9 +38,9 @@ SyncManager.register('get_semaphore')
 
 
 def _runforever(server):
-    cap = trackutils.get_vid(server.vidinput)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, server.width)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, server.height)
+    server.cap = trackutils.get_vid(server.vidinput)
+    server.cap.set(cv2.CAP_PROP_FRAME_WIDTH, server.width)
+    server.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, server.height)
     t_init = time.time()
     databuffer, clockbuffer = server.setup_shared_arrays()
     if server.write_video.value:
@@ -48,9 +48,11 @@ def _runforever(server):
 
     for func in server.atstart:
         server.atstart[func](server)
+
+    server.t_run_begin = time.time()
     while server.running.value and not server.timed_out():
         try:
-            server._eachframe(cap, databuffer, clockbuffer)
+            server._eachframe(server.cap, databuffer, clockbuffer)
         except KeyboardInterrupt:
             server.running.value = False
             break
@@ -58,13 +60,13 @@ def _runforever(server):
             server.running.value = False
             break
 
+    if server.write_video.value:
+        server.vidout.release()
+
     for func in server.atstop:
         server.atstop[func](server)
 
-    if server.write_video.value:
-        server.vidout.release()
-    cap.release()
-    #server.stop()#???
+    server.cap.release()
 
 
 class TracktorServer:
@@ -258,8 +260,9 @@ class TracktorServer:
         """
 
         fourcc = cv2.VideoWriter_fourcc(*TracktorServer._codec)
+        self.vidfilename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format'])
         vidout = cv2.VideoWriter(
-                                filename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format']),
+                                filename=self.vidfilename,
                                 fourcc = fourcc,
                                 fps = self.params['fps'],
                                 frameSize = self.framesize,

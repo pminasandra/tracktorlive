@@ -1,8 +1,8 @@
 ---
 title: also_record_audio
 author: Pranav Minasandra
-description: Record audio with ffmpeg in a separate process and print a command to mux it into the recorded video at the end.
-known_issues: ffmpeg needs to be installed. a command is printed, needs to be run * by the user *
+description: Record audio with ffmpeg in a separate process and muxes it into the recorded video at the end.
+known_issues: ffmpeg needs to be installed.
 ---
 
 **Notes**:
@@ -14,105 +14,207 @@ known_issues: ffmpeg needs to be installed. a command is printed, needs to be ru
 
 ```python
 # CASSETTE BEGINS: ALSO_RECORD_AUDIO
-# AUTHOR: Pranav Minasandra
-# DESCRIPTION: Record audio with ffmpeg in a separate process and mux it into the recorded video at the end.
+# DESCRIPTION: Record audio with ffmpeg in a separate process and muxes it into the recorded video at the end.
+# AUTHOR: TracktorLive Cassette Maker GPT
 #
-# USER SPECIFIABLE DETAILS
-AUDIO_DEVICE = None          # e.g. "default", "hw:0", "plughw:1,0", or Pulse device name; None -> "default"
-AUDIO_INPUT_FMT = "alsa"     # "alsa" (most common), or "pulse"
-AUDIO_SAMPLERATE = 48000     # Hz
-AUDIO_CHANNELS = 1           # 1=mono, 2=stereo
-AUDIO_OUTFILE = None         # None -> f"{server.feed_id}-audio.wav"
-SYNC_OUTFILE = None          # None -> f"{server.feed_id}-audio-sync.json"
-VIDEO_INFILE = None          # Path to the recorded video to mux into (must exist by ending)
-MUXED_OUTFILE = None         # None -> f"{server.feed_id}-with-audio.mp4"
-MUXED_SUFFIX = "-with-audio.mp4"
-PATH_TO_FFMPEG = "ffmpeg"    # Default assumes 'ffmpeg' in PATH. Otherwise specify
-                             # complete path to binary.
-# KNOWN ISSUES: Requires ffmpeg installed; VIDEO_INFILE must be set to the final recorded video path.
+# USER DEFINED VARIABLES:
+audrec_PATH_TO_FFMPEG = "ffmpeg"  # or absolute path, e.g. "/usr/bin/ffmpeg"
 
-#INTERNALS (DO NOT EDIT UNLESS YOU KNOW WHAT YOU'RE DOING)
+# Audio capture backend (edit for your OS):
+#   Linux (ALSA):       ["-f","alsa","-i","default"]
+#   macOS (avfoundation): ["-f","avfoundation","-i",":0"]   # often needs permission + correct device index
+#   Windows (dshow):    ["-f","dshow","-i","audio=Microphone (Your Device Name)"]
+audrec_FFMPEG_AUDIO_INPUT_ARGS = ["-f", "alsa", "-i", "default"]
+
+# WAV encoding options (keep PCM for maximum compatibility)
+audrec_WAV_ARGS = ["-ac", "1", "-ar", "48000", "-c:a", "pcm_s16le"]
+
+# When muxing, audio codec to store inside the video container (typical for MP4)
+audrec_MUX_AUDIO_CODEC_ARGS = ["-c:a", "aac", "-b:a", "192k"]
+
+# If True: replace server.vidfilename with an audio-muxed version (via temp file + rename)
+audrec_OVERWRITE_VIDEO_IN_PLACE = True
+
+# INTERNALS (do not edit unless you know what you're doing)
+audrec__stop_evt = None
+audrec__proc = None
+audrec__audio_started_t = None
+audrec__wav_path = None
+
+def audrec__audio_worker(stop_evt, started_conn, ffmpeg_path, ffmpeg_in_args, wav_args, wav_out_path):
+    import subprocess, time, signal
+    # Launch ffmpeg recorder; report "precise" start time right after spawning
+    cmd = [ffmpeg_path, "-y", "-hide_banner", "-loglevel", "error"] + ffmpeg_in_args + wav_args + [wav_out_path]
+    try:
+        p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        started_conn.send(time.time())
+    except Exception:
+        try:
+            started_conn.send(None)
+        except Exception:
+            pass
+        return
+    finally:
+        try:
+            started_conn.close()
+        except Exception:
+            pass
+
+    # Wait until asked to stop, then stop ffmpeg cleanly
+    try:
+        while not stop_evt.is_set():
+            if p.poll() is not None:
+                break
+            time.sleep(0.01)
+    finally:
+        if p.poll() is None:
+            try:
+                p.send_signal(signal.SIGINT)
+                p.wait(timeout=2.0)
+            except Exception:
+                try:
+                    p.kill()
+                except Exception:
+                    pass
+        try:
+            p.wait(timeout=0.5)
+        except Exception:
+            pass
 
 @server.startfunc
-def also_record_audio_start(server):
-    import time, subprocess, shutil, os.path
+def audrec__start(server):
+    import multiprocessing as mp
+    import os, time, ulid
 
-    if shutil.which("ffmpeg") is None:
-        if not os.path.exists(PATH_TO_FFMPEG):
-            raise RuntimeError("ALSO_RECORD_AUDIO couldn't find ffmpeg.")
+    global audrec__stop_evt, audrec__proc, audrec__audio_started_t, audrec__wav_path
 
-    server._audio_device = "default" if AUDIO_DEVICE is None else str(AUDIO_DEVICE)
-    server._audio_wav = AUDIO_OUTFILE or f"{server.feed_id}-audio.wav"
+    os.makedirs(server.feed_id, exist_ok=True)
+    audrec__wav_path = os.path.join(server.feed_id, f"{server.feed_id}_aud_{str(ulid.ULID())}.wav")
 
-    cmd = [
-        PATH_TO_FFMPEG, "-hide_banner", "-loglevel", "error",
-        "-f", str(AUDIO_INPUT_FMT),
-        "-ar", str(int(AUDIO_SAMPLERATE)),
-        "-ac", str(int(AUDIO_CHANNELS)),
-        "-i", server._audio_device,
-        "-c:a", "pcm_s16le",
-        "-y", server._audio_wav,
-    ]
+    audrec__stop_evt = mp.Event()
+    parent_conn, child_conn = mp.Pipe(duplex=False)
 
-    server._audio_cmd = cmd
-    server._audio_proc = subprocess.Popen(cmd)
-    server.audio_t_init = time.time()
+    audrec__proc = mp.Process(
+        target=audrec__audio_worker,
+        args=(
+            audrec__stop_evt,
+            child_conn,
+            audrec_PATH_TO_FFMPEG,
+            audrec_FFMPEG_AUDIO_INPUT_ARGS,
+            audrec_WAV_ARGS,
+            audrec__wav_path,
+        ),
+    )
+    audrec__proc.start()
 
-    # Register atexit fallback (will only actually run if mux cmd is later set)
+    # Receive worker-reported start time (fallback to now if not available)
+    try:
+        if parent_conn.poll(2.0):
+            audrec__audio_started_t = parent_conn.recv()
+        else:
+            audrec__audio_started_t = None
+    except Exception:
+        audrec__audio_started_t = None
+    finally:
+        try:
+            parent_conn.close()
+        except Exception:
+            pass
 
-# KNOWN ISSUES: The printed command must be run only after the mp4 has finalized (moov atom written).
+    if audrec__audio_started_t is None:
+        audrec__audio_started_t = time.time()
 
 @server.stopfunc
-def print_mux_audio_cmd(server):
-    import os, os.path, math, shutil
+def audrec__stop(server):
+    import os, time, subprocess, shutil
 
-    ffmpeg = PATH_TO_FFMPEG if os.path.exists(PATH_TO_FFMPEG) else (shutil.which("ffmpeg") or PATH_TO_FFMPEG)
+    global audrec__stop_evt, audrec__proc, audrec__audio_started_t, audrec__wav_path
 
-    audio_in = getattr(server, "_audio_wav", None)
-    if not audio_in:
-        print("[ALSO_RECORD_AUDIO] No server._audio_wav found; nothing to mux.")
+    # Stop audio process
+    try:
+        if audrec__stop_evt is not None:
+            audrec__stop_evt.set()
+    except Exception:
+        pass
+
+    try:
+        if audrec__proc is not None and audrec__proc.is_alive():
+            audrec__proc.join(timeout=3.0)
+    except Exception:
+        pass
+
+    try:
+        if audrec__proc is not None and audrec__proc.is_alive():
+            audrec__proc.terminate()
+            audrec__proc.join(timeout=1.0)
+    except Exception:
+        pass
+
+    # If not writing video, just keep the wav and exit
+    if not bool(server.write_video.value):
         return
 
-    feed_dir = str(getattr(server, "feed_id", ""))
-    if not feed_dir or (not os.path.isdir(feed_dir)):
-        print("[ALSO_RECORD_AUDIO] feed_id directory not found; cannot locate video.")
+    # Determine video path
+    vid_path = getattr(server, "vidfilename", None)
+    if vid_path is None:
+        # fallback: some versions may not store vidfilename; user requested server.vidfilename though
         return
 
-    vids = sorted([v for v in os.listdir(feed_dir) if v.lower().endswith(".mp4")])
-    if not vids:
-        print("[ALSO_RECORD_AUDIO] No .mp4 files found in feed directory; nothing to mux.")
+    if audrec__wav_path is None or (not os.path.exists(audrec__wav_path)):
         return
 
-    video_in = os.path.join(feed_dir, vids[-1])
-    muxed_out = video_in[:-4] + MUXED_SUFFIX
+    # Compute sync correction using server.t_run_begin (set after @server.startfunc hooks) vs audio start
+    #   delta > 0  => audio started AFTER video started   => delay audio by delta (itsoffset)
+    #   delta < 0  => audio started BEFORE video started  => trim audio by -delta (ss)
+    try:
+        delta = float(audrec__audio_started_t) - float(server.t_run_begin)
+    except Exception:
+        delta = 0.0
 
-    server_t0 = float(getattr(server, "t_init", float("nan")))
-    audio_t0 = float(getattr(server, "audio_t_init", float("nan")))
-    offset = audio_t0 - server_t0
+    ff = audrec_PATH_TO_FFMPEG
+    tmp_out = vid_path + ".audmux_tmp" + os.path.splitext(vid_path)[1]
 
-    cmd = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y"]
+    # Build ffmpeg mux command
+    cmd = [ff, "-y", "-hide_banner", "-loglevel", "error", "-i", vid_path]
 
-    if (not math.isnan(offset)) and offset < 0:
-        # audio earlier -> trim audio
-        cmd += ["-ss", f"{abs(offset):.6f}", "-i", audio_in, "-i", video_in]
-        audio_idx, video_idx = 0, 1
+    if delta > 0:
+        cmd += ["-itsoffset", f"{delta:.6f}", "-i", audrec__wav_path]
+    elif delta < 0:
+        cmd += ["-ss", f"{(-delta):.6f}", "-i", audrec__wav_path]
     else:
-        # audio later/unknown -> delay audio
-        delay = 0.0 if math.isnan(offset) else max(0.0, float(offset))
-        cmd += ["-i", video_in, "-itsoffset", f"{delay:.6f}", "-i", audio_in]
-        video_idx, audio_idx = 0, 1
+        cmd += ["-i", audrec__wav_path]
 
+    # Map video from input0, audio from input1; keep video stream copy, re-encode audio
     cmd += [
-        "-map", f"{video_idx}:v:0",
-        "-map", f"{audio_idx}:a:0",
+        "-map", "0:v:0",
+        "-map", "1:a:0",
         "-c:v", "copy",
-        "-c:a", "aac",
+        *audrec_MUX_AUDIO_CODEC_ARGS,
         "-shortest",
-        muxed_out,
+        tmp_out,
     ]
 
-    print("\n[ALSO_RECORD_AUDIO] Run this AFTER the mp4 has finished writing:")
-    print(" ".join(cmd))
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        # If mux fails, do not delete the WAV (user can inspect)
+        return
 
-# CASSETTE ENDS: ALSO_RECORD_AUDIO
+    # Replace original video (optional)
+    if audrec_OVERWRITE_VIDEO_IN_PLACE:
+        try:
+            os.replace(tmp_out, vid_path)
+        except Exception:
+            # If replace fails, keep tmp output
+            pass
+    else:
+        # If not overwriting, leave tmp_out as additional file
+        pass
+
+    # Delete WAV after successful mux
+    try:
+        os.remove(audrec__wav_path)
+    except Exception:
+        pass
+# CASSETTE ENDS: RECORD_AUDIO_AND_OPTIONALLY_MUX
 ```

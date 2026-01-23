@@ -216,5 +216,5 @@ def audrec__stop(server):
         os.remove(audrec__wav_path)
     except Exception:
         pass
-# CASSETTE ENDS: RECORD_AUDIO_AND_OPTIONALLY_MUX
+# CASSETTE ENDS: ALSO_RECORD_AUDIO
 ```

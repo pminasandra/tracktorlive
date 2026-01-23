@@ -7,7 +7,8 @@ Here are all the cassettes available as of now.
 | [Add Circular Mask](Add_Circular_Mask/add_circular_mask.md) | Masks everything except a circle of specified position and radius |
 | [Add Custom Mask](Add_Custom_Mask/add_custom_mask.md) | Add a custom mask to every frame based on user-provided image file |
 | [Add Rectangular Mask](Add_Rectangular_Mask/add_rectangular_mask.md) | Masks everything except a rectangle of specified vertices |
-| [Also Record Audio](Also_Record_audio/also_record_audio.md) | Record audio with ffmpeg in a separate process and print a command to mux it into the recorded video at the end |
+| [Also Record Audio](Also_Preserve_Audio/also_preserve_audio.md) | Extract audio from input video and muxes it into the output video at the end |
+| [Also Record Audio](Also_Record_Audio/also_record_audio.md) | Record audio with ffmpeg in a separate process and muxes it into the recorded video at the end |
 | [Background Subtract](Background_Subtract/background-subtract.md) | Replace background pixels with white using an averaged background image |
 | [Boost Contrast](Boost_Contrast/boost_contrast.md) | Brightness and contrast control |
 | [Channel Select](Channel_Select/channel_select.md) | Preserves only one of the BGR channels |
@@ -22,6 +23,7 @@ Here are all the cassettes available as of now.
 | [First Person Views](First_Person_Views/first_person_views.md) | For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual |
 | [Gaussian Blur](Gaussian_Blur/gaussian_blur.md) | Apply a Gaussian blur to each frame before tracking |
 | [Message Arduino](Message_Arduino/message_arduino.md) | When a user-defined function returns a character, transmits that character to a connected Arduino |
+| [Overlay Text From Df](Overlay_Text_From_Dataframe/overlay_text_from_dataframe.md) | Overlays user-provided frame-wise text on video |
 | [Preserve Frame](Preserve_Frame/preserve_frame.md) | Put non-edited frames in framesbuffer (useful for dumpvideo methods) |
 | [Print Directions](Print_Directions/print_directions.md) | Calculates and prints the direction based on position changes |
 | [Print Position](Print_Position/print_position.md) | Print current position of the target individual |

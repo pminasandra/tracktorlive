@@ -1,5 +1,5 @@
 ---
-title: also_record_audio
+title: also_preserve_audio
 author: Pranav Minasandra (TracktorLive Cassette Maker GPT)
 description: Extract audio from input video and muxes it into the output video at the end.
 known_issues: None

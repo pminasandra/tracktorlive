@@ -108,7 +108,7 @@ def cleanup_centroids(final, contours, n_inds,
                         mot, frame_index,
                         draw_circles=False,
                         use_kmeans = True
-                    ):#yeh mot kya hai?
+                    ):
     """
     Cleans up and associates detected centroids with tracked objects using k-means and the Hungarian algorithm.
 

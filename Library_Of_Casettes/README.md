@@ -14,10 +14,10 @@ Here are all the cassettes available as of now.
 | [Channel Select](Channel_Select/channel_select.md) | Preserves only one of the BGR channels |
 | [Color Select](Color_Select/color_select.md) | Keep only pixels close to a user-defined BGR color; mask out everything else |
 | [Delayed Start](Delayed_Start/delayed_start.md) | Delay the start of tracking by a fixed amount of time |
-| [Display Feed](Display_Feed/show_live_feed.md) | Displays current tracking from the server in real-time. Press 'q' or <Esc> to close running display at any time |
+| [Display Feed](Display_Feed/show_live_feed.md) | Displays current tracking from the server in real-time. Press 'q' or `<Esc>` to close running display at any time |
 | [Display Final Vel Plot](Display_Final_Plot/display_final_plot.md) | Displays and saves a plot of velocities when we reach the end of the video file we are analysing |
-| [Display With Circ Hl](Display_With_Circ_Highlight/display_with_circ_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen circular region. Press 'q' or <Esc> to close running display at any time |
-| [Display With Rect Hl](Display_With_Rect_Highlight/display_with_rect_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen rectangular region. Press 'q' or <Esc> to close running display at any time |
+| [Display With Circ Hl](Display_With_Circ_Highlight/display_with_circ_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen circular region. Press 'q' or `<Esc>` to close running display at any time |
+| [Display With Rect Hl](Display_With_Rect_Highlight/display_with_rect_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen rectangular region. Press 'q' or `<Esc>` to close running display at any time |
 | [Dynamic Masking](Dynamic_Masking/dynamic_masking.md) | Only look for individuals in vicinity of previous locs |
 | [Extract Background](Extract_Background/extract_background.md) | computes per-pixel variability to estimate a background image |
 | [Extract Specified Frames](Extract_Specified_Frames/extract_specified_frames.md) | Saves as jpg all frames at specified indices |

@@ -46,14 +46,20 @@ TracktorLive works on a **server--client model**, where:
     buffer with clock and tracked locations.
 -   One or more **clients** can connect and access this data in real
     time.
--   Small, user-defined functions ("cassettes") can be registered to run
+-   Small, user-defined functions (["cassettes"](./Library_Of_Cassettes/)) can be registered to run
     every frame or at server shutdown.
 -   This way, all tracking and multiprocessing happens in the background
     allowing users without computer vision experience to directly get involved
     with such experimental setups.
 
-All interaction is via helper functions like `spawn_trserver`,
-`run_trsession`, and decorators like `@server`, `@server.stopfunc`.
+All interaction is via the use of cassettes. Cassettes are designed to be
+readily copied into scripts. New cassettes can be written easily
+by anyone with basic knowledge of Python. We also suggest the [TracktorLive
+Cassette Maker
+GPT](https://chatgpt.com/g/g-696e226d0d048191a9dc03b30cdb5427-tracktorlive-cassette-maker),
+an openAI customGPT. However, this is not an official part of the software and
+our providing this link must not be seen as an endorsement of this company. The
+idea for including a customGPT comes from [Dr. Aiswarya Prasad](https://aiswarya-prasad.github.io/).
 
 ------------------------------------------------------------------------
 
@@ -89,6 +95,31 @@ def printloc(data, clock):
 
 run_trsession(server, semm, client)
 ```
+
+Here is the basic structure of a TracktorLive script:
+
+```python
+import json
+import tracktorlive as trl
+
+with open("params.json") as jsonf:
+    params = json.load(jsonf)
+FEED_ID = "trial-feed"
+
+server, semm = trl.spawn_trserver(0, params, feed_id=FEED_ID)
+
+# SERVER CASETTES WILL GO HERE
+# THOSE WILL TAKE CARE OF VIDEO PROCESSING ETC
+
+client = trl.spawn_trclient(feed_id=FEED_ID) #optional
+
+# OPTIONALLY:
+# CLIENT CASETTES WILL GO HERE
+# THOSE WILL TAKE CARE OF RESPONSE DELIVERY
+
+trl.run_trsession(server, semm, client)
+```
+
 
 🧪 Real-world Use Cases
 ----------------------

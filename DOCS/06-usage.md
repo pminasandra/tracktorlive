@@ -86,3 +86,5 @@ multiple clients, each handling one task.
 
 Use the `trl.run_trsession` method to run your server and all your clients in
 one go!
+
+[previous](05-core-concepts.md) | [next](07-reference.md)

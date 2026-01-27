@@ -45,6 +45,7 @@ def collect_entries(root: Path):
         meta = parse_front_matter(text)
         title_key = meta.get("title") or md_path.stem
         description = meta.get("description", "").rstrip(".")
+        description = description.replace("<Esc>", "`<Esc>`")
         link_text = nice_title(title_key)
         rel_link = md_path.as_posix()  # relative path from root
         rows.append((link_text, description, rel_link))

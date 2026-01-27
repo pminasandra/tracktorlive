@@ -7,7 +7,7 @@ Here are all the cassettes available as of now.
 | [Add Circular Mask](Add_Circular_Mask/add_circular_mask.md) | Masks everything except a circle of specified position and radius |
 | [Add Custom Mask](Add_Custom_Mask/add_custom_mask.md) | Add a custom mask to every frame based on user-provided image file |
 | [Add Rectangular Mask](Add_Rectangular_Mask/add_rectangular_mask.md) | Masks everything except a rectangle of specified vertices |
-| [Also Record Audio](Also_Preserve_Audio/also_preserve_audio.md) | Extract audio from input video and muxes it into the output video at the end |
+| [Also Preserve Audio](Also_Preserve_Audio/also_preserve_audio.md) | Extract audio from input video and muxes it into the output video at the end |
 | [Also Record Audio](Also_Record_Audio/also_record_audio.md) | Record audio with ffmpeg in a separate process and muxes it into the recorded video at the end |
 | [Background Subtract](Background_Subtract/background-subtract.md) | Replace background pixels with white using an averaged background image |
 | [Boost Contrast](Boost_Contrast/boost_contrast.md) | Brightness and contrast control |
@@ -19,6 +19,7 @@ Here are all the cassettes available as of now.
 | [Display With Circ Hl](Display_With_Circ_Highlight/display_with_circ_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen circular region. Press 'q' or <Esc> to close running display at any time |
 | [Display With Rect Hl](Display_With_Rect_Highlight/display_with_rect_highlight.md) | Displays current tracking from the server in real-time. Highlights a chosen rectangular region. Press 'q' or <Esc> to close running display at any time |
 | [Dynamic Masking](Dynamic_Masking/dynamic_masking.md) | Only look for individuals in vicinity of previous locs |
+| [Extract Background](Extract_Background/extract_background.md) | computes per-pixel variability to estimate a background image |
 | [Extract Specified Frames](Extract_Specified_Frames/extract_specified_frames.md) | Saves as jpg all frames at specified indices |
 | [First Person Views](First_Person_Views/first_person_views.md) | For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual |
 | [Gaussian Blur](Gaussian_Blur/gaussian_blur.md) | Apply a Gaussian blur to each frame before tracking |

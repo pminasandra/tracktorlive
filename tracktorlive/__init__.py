@@ -22,8 +22,8 @@ from .server import TracktorServer, spawn_trserver, run_trserver, close_trserver
 from .client import TracktorClient, spawn_trclient, run_trclient, close_trclient, wait_and_close_trclient, list_feeds
 from .paramfixing import gui_set_params as get_params_from_gui
 
-__version__ = "0.9.0"
-__author__ = "Pranav Minasandra, Isaac Planas-Sitja, Dominique Roche, Vivek H Sridhar"
+__version__ = "1.0.0"
+__author__ = "Pranav Minasandra, Vivek H Sridhar, Dominique Roche, Isaac Planas-Sitja"
 __license__ = "MIT"
 __url__ = "https://github.com/pminasandra/tracktorlive"
 
@@ -34,7 +34,7 @@ __all__ = ['TracktorServer', 'TracktorClient',
             ]
 
 APP_NAME = "tracktorlive"
-APP_AUTHOR = "Pranav Minasandra, Isaac Planas-Sitjà, Dominique Roche, Vivek H Sridhar"
+APP_AUTHOR = "Pranav Minasandra, Vivek H Sridhar, Dominique Roche, Isaac Planas-Sitja"
 FEEDS_DIR = joinpath(
                 pfd.user_data_dir(appname=APP_NAME, appauthor=APP_AUTHOR),
                 "LiveFeeds"

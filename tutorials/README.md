@@ -26,6 +26,9 @@ python3 <filename>
 - Any text in command descrpitions between square brackets, `[like this]`, is
   optional.
 - We recommend going through all tutorials.
+- **Note**: Mac users may encounter minor issues in running the code. In such
+  cases, please open the script that causes issues and uncomment the specific
+  lines indicated for you using comments.
 
 ## List of tutorials
 

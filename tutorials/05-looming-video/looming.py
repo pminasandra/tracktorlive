@@ -8,7 +8,6 @@ import os
 from os.path import join as joinpath
 import subprocess
 import time
-mp.set_start_method('fork')
 
 import cv2
 import json
@@ -16,6 +15,9 @@ import numpy as np
 import ulid
 
 import tracktorlive as trl
+
+# MAC USERS UNCOMMENT FOLLOWING LINE:
+# mp.set_start_method('fork')
 
 # This shows how to setup a server-client system to run a specific command, in
 # this case play a video, whenever the animal is moving. The video example is

@@ -14,6 +14,9 @@ import ulid
 
 import tracktorlive as trl
 
+# MAC USERS UNCOMMENT FOLLOWING LINE:
+# mp.set_start_method('fork')
+
 # This demonstrates how to chunk input from video sources, retaining
 # only videos where animals are in proximity. Here we will use a video,
 # but this is only for demonstration. This is practically intended for

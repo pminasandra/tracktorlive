@@ -33,8 +33,11 @@ than needed. However, overall, a first-person view is somewhat cleanly obtained.
 
 ![](termite_collage.gif)
 
-(**TODO**: Provide a prompt for users to give to their own LLMs for their own
-use-cases)
+To facilitate the quick creation of cassettes using LLMs, we provide the
+[TracktorLive Cassette Maker
+CustomGPT](https://chatgpt.com/g/g-696e226d0d048191a9dc03b30cdb5427-tracktorlive-cassette-maker).
+We recommend that all cassettes, especially those created using LLMs, should be
+thoroughly tested before use.
 
 ## Explanation
 

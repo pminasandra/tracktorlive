@@ -14,8 +14,7 @@ in a rectangular tank.
 We will create a python script that takes uses TracktorLive to play
 a full-screen video whenever the fish moves over a certain velocity.
 
-To create a python script that uses TracktorLive to play a full-screen video of
-a looming stimulus whenever a animal’s movements exceed a certain velocity. The
+The
 folder associated with this tutorial contains a video, `flume_video.mp4`, showing
 the movement of an individual fish in a rectangular tank.
 
@@ -30,7 +29,10 @@ We have already tuned the tracking parameters for you, and saved them in
 `flume-video-params.json`. The python script `looming.py` makes use of the
 [Run Command On Condition](../../Library_Of_Casettes/Run_Command_On_Condition/run_command_on_condition.md)
 cassette to play the looming-stimulus video in full-screen. This cassette has been set up, in
-this script, to use VLC to set up and play the looming stimulus video.
+this script, to use VLC to set up and play the looming stimulus video. (*Note:
+VLC is a popular open-source video player).
+
+To run this example script, type: `python3 looming.py`.
 
 ## Explanation
 

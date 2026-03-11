@@ -53,6 +53,22 @@ Needless to say, with this option you run the risk of breaking your system
 packages. However, it has worked flawlessly so far on both normal Linux and WSL
 installs.
 
+If you ever get an error that says `tracktorlive: command not found`, this means
+your installation of TracktorLive is in a directory not on the Linux variable
+'PATH'. The correct location that needs to be added to your path is often
+shown when you install the package in step 4 in a line that looks as follows:
+
+`WARNING: The script tracktorlive is installed in '/home/<username>/.local/bin' which
+is not on PATH.`
+
+In such a situation, you need to enter the following command each time to enable
+the use of the `tracktorlive` CLI tool:
+
+`export PATH="/home/<username>/.local/bin:$PATH"`
+
+Make sure you replace the addition to the path with the exact one that was
+printed by the warning above.
+
 ### 🍎 macOS
 
 1. Install Homebrew (if not already installed):
@@ -84,7 +100,7 @@ installs.
 > install WSL (Windows Subsystem for Linux, see below).
 
 1. Install WSL (Windows 10 and 11 only). Open the pre-installed software
-   'Powershell', and run:
+   'Powershell' **as administrator**, and run:
 
     ```powershell
     wsl --install -d Ubuntu

@@ -2,6 +2,12 @@
 Real-time low-cost animal tracking system.
 """
 
+import multiprocessing as mp
+import sys
+
+if sys.platform == "darwin":
+    mp.set_start_method("fork")
+
 import json
 import os
 from os.path import join as joinpath

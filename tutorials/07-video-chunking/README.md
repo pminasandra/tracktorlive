@@ -55,7 +55,7 @@ You can see that running the script yields the three video chunks below.
 While we have done this with a video stream, it is easy to replicate with
 a realtime feed by changing the declaration of the server. In the
 `trl.spawn_trserver` segment, change the name of the video to the index of the
-camera, and set `realtime` to False.
+camera (e.g., 0), and set `realtime` to True.
 
 ## Explanation
 

@@ -58,6 +58,7 @@ def add_rectangular_mask(server):
     frame[mask ==  0] = 0
 # CASETTE ENDS: ADD_RECTANGULAR_MASK
 
+# Mac users please remove the below cassette.
 # CASETTE BEGINS: SHOW_LIVE_FEED
 # DESCRIPTION: Displays current tracking from the server in real-time.
 #   Press 'q' or <Esc> to close running display at any time.

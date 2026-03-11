@@ -66,15 +66,16 @@ idea for including a customGPT comes from [Dr. Aiswarya Prasad](https://aiswarya
 📦 Installation
 --------------
 
-TracktorLive is mainly targeted towards Linux-like environments. Windows
-users are asked to use Windows Subsystem for Linux (WSL) to use our software.
-For running this software on a Linux-like system, you can run
+TracktorLive is mainly targeted towards Linux-like environments. 
+However, it works (and has been tested) on MacOS and Windows.
+If you are already using a Linux system, you can run
 
 ```bash
 pip install tracktorlive
 ```
 
-For usage in other platforms, see [DOCS](./DOCS/).
+For usage in other platforms, such as MacOS or Windows (through Windows
+Subsystem for Linux, WSL) see [DOCS](./DOCS/).
 
 ------------------------------------------------------------------------
 

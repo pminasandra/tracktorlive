@@ -21,6 +21,16 @@ python3 <filename>
 
 ## Important notes
 
+- To run the commands in this tutorial, you need to be able to access the
+  provided media and images. For this, first clone the repository using the
+  command
+
+  ```bash
+  git clone https://github.com/pminasandra/tracktorlive.git
+  ```
+
+- You should navigate to the specific folder containing each tutorial in this
+  repository, and launch your terminal from there.
 - Commands should be run as they are given, unless explicitly specified.
 - Any text in command descrpitions between angular brackets, `<like this>`, is meant to be replaced.
 - Any text in command descrpitions between square brackets, `[like this]`, is

@@ -130,8 +130,10 @@ Instead of `ant.mp4`, you can input your camera feed directly into the Tracktor
 server in track.py to track in real time, by specifying the camera ID (e.g., 0).
 You will also then set the variable `realtime` to `True`.
 
-For tuning the parameters after cassette application, you first need to record
-a brief (e.g., 10 min) video from your camera (see [Tutorial 1](../01-recording-video)). Then,
+For tuning the parameters after cassette application, typically you first need to record
+a brief (e.g., 10 min) video from your camera (see [Tutorial 1](../01-recording-video)). 
+Here, the role of this initial video is played by `ant.mp4`.
+Then,
 use a script like `pre_record.py` on this short video to apply cassettes and
 obtain a new, modifed 10 min video. You will then use `tracktorlive gui` to tune
 tracking parameters with this modified video. As long as your setup

@@ -3,7 +3,6 @@
 Example script to chunk video data only when animals approach close by.
 """
 
-import multiprocessing as mp
 import os
 from os.path import join as joinpath
 
@@ -14,8 +13,6 @@ import ulid
 
 import tracktorlive as trl
 
-# MAC USERS UNCOMMENT FOLLOWING LINE:
-# mp.set_start_method('fork')
 
 # This demonstrates how to chunk input from video sources, retaining
 # only videos where animals are in proximity. Here we will use a video,

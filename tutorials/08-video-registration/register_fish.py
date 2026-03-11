@@ -1,8 +1,6 @@
 import json
-import multiprocessing as mp
 from os.path import join as joinpath
 import os
-mp.set_start_method('fork')
 
 import cv2
 import numpy as np

@@ -18,7 +18,7 @@ individual ant in a petri dish.
 
 ### Obtaining tracking values
 
-`tracktorlive gui` is the subcommand to obtain and tine parameter values for
+`tracktorlive gui` is the subcommand to obtain and tune parameter values for
 tracking. This is the full command you need to type into the terminal:
 
 ```bash

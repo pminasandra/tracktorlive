@@ -95,17 +95,37 @@ We have also used the
    [Boost
    Contrast](../../Library_Of_Casettes/Boost_Contrast/boost_contrast.md)
    cassette.
+Run this script now:
+
+```bash
+python3 pre_record.py
+```
 
 This python script will generate another video in the pre_record_ant/ directory, which
 you can play to see that details outside the Petri plate have been blacked out
 and contrast has been boosted.
 
-Manually rename the created video to 'masked_ant.mp4'. Then, we can use the command
-`tracktorlive gui -f masked_ant.mp4 -o true-params.json` to accurately tune
-the tracking parameters (see [Tutorial 3](../03-tuning-params)).
+Manually rename the created video to 'masked_ant.mp4':
 
-Finally, we have created the script `track.py`, that uses all cassettes used here
+```bash
+mv pre_record_ant/*.mp4 masked_ant.mp4
+```
+
+Then, we can use the command
+`tracktorlive gui -f masked_ant.mp4 -o true-params.json` to accurately tune
+the tracking parameters (see [Tutorial 3](../03-tuning-params)). The correct
+tuning parameters are now stored in `true-params.json`, and in combination with
+the same cassettes as those in `pre_record.py`, they can be used anytime with
+the same camera setup.
+
+Finally, we have created the script `track.py`, that uses the exact same
+cassettes used in `pre_record.py`
 as well as the `write_recordings=True` option, to accurately track the ant.
+Run this script using:
+
+```bash
+python3 track.py
+```
 
 ## Explanation
 

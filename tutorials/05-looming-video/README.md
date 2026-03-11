@@ -68,7 +68,7 @@ def _vel_higher(data, clock):
     return avg_speed > THRESHOLD_VEL
 ```
 
-This functionuses the last 5 frames to compute the average velocity of the individual.
+This function uses the last 5 frames to compute the average velocity of the individual.
 If the average velocity exceeds 125 px / s, it launches a bash command. The
 specific bash command used in this script is:
 

@@ -8,10 +8,6 @@ import cv2
 import numpy as np
 import tracktorlive as trl
 
-# MAC USERS UNCOMMENT FOLLOWING 2 LINES:
-# import multiprocessing as mp
-# mp.set_start_method('fork')
-
 with open("dummy-params.json") as f:
     params = json.load(f)
 

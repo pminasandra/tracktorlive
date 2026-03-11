@@ -7,8 +7,6 @@ Example code that triggers when an individual is within a certain part of the sc
 """
 
 import json
-import multiprocessing as mp
-mp.set_start_method('fork')
 
 import cv2
 import serial

@@ -16,9 +16,6 @@ import ulid
 
 import tracktorlive as trl
 
-# MAC USERS UNCOMMENT FOLLOWING LINE:
-# mp.set_start_method('fork')
-
 # This shows how to setup a server-client system to run a specific command, in
 # this case play a video, whenever the animal is moving. The video example is
 # motivated by presenting looming stimuli, but any shell command can be added in

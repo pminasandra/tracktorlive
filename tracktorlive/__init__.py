@@ -28,7 +28,7 @@ from .server import TracktorServer, spawn_trserver, run_trserver, close_trserver
 from .client import TracktorClient, spawn_trclient, run_trclient, close_trclient, wait_and_close_trclient, list_feeds
 from .paramfixing import gui_set_params as get_params_from_gui
 
-__version__ = "1.0.0"
+__version__ = "1.0.2 ('Clytemnestra')"
 __author__ = "Pranav Minasandra, Vivek H Sridhar, Dominique Roche, Isaac Planas-Sitja"
 __license__ = "MIT"
 __url__ = "https://github.com/pminasandra/tracktorlive"

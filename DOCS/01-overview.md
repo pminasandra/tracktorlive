@@ -51,7 +51,7 @@ trigger recordings based
 on spatial locations of individuals, extract centred video segments, write
 custom log files, or launch other local processes.
 
-TracktorLive runs on Unix-like environments (Linux, macOS, WSL in
+TracktorLive runs on Unix-like environments (Linux distros and WSL in
 Windows). A GUI allows users to easily set optimal tracking
 parameters and save them as a .json file, which is useful for analyzing multiple
 videos using the same experimental setup. Additional parameters to specify the

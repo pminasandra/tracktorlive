@@ -69,30 +69,6 @@ the use of the `tracktorlive` CLI tool:
 Make sure you replace the addition to the path with the exact one that was
 printed by the warning above.
 
-### 🍎 macOS
-
-1. Install Homebrew (if not already installed):
-
-    ```bash 
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    ```
-
-2. Install system tools and python
-
-    ```bash 
-    brew install cmake make flex bison lld
-    brew install python
-    ```
-
-3. Install TracktorLive
-
-    ```bash
-    pip3 install tracktorlive
-    ```
-
-
-
-
 
 ### 🪟 Windows (via WSL)
 
@@ -150,6 +126,35 @@ resource, for this purpose.
 **NOTE 2**: WSL users have to follow additional steps to allow the virtual
 system to access web-cams and Arduino devices. You can go [here](COMPORT.md) to
 read instructions for this.
+
+
+### 🍎 macOS
+
+**Note:** TracktorLive's real time functions are unsupported on MacOS. You can
+still implement *post hoc* analyses on Mac with our software (using pre-recorded
+video files). This is a known issue, and we are considering various solutions.
+
+1. Install Homebrew (if not already installed):
+
+    ```bash 
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+2. Install system tools and python
+
+    ```bash 
+    brew install cmake make flex bison lld
+    brew install python
+    ```
+
+3. Install TracktorLive
+
+    ```bash
+    pip3 install tracktorlive
+    ```
+
+
+
 
 [previous](02-quickstart.md) | [next](04-cli.md)
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tracktorlive"
-version = "1.0.2 ('Clytemnestra')"
+version = "1.0.2"
 description = "Real-time low-cost animal tracking and response delivery."
 authors = [{name = "Pranav Minasandra"}, {email = "severuscool@gmail.com"},
                {name = "Isaac Planas-Sitjà"},

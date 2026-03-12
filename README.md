@@ -1,4 +1,4 @@
-TracktorLive (v0.9-beta)
+TracktorLive v1.0.2 ('Clytemnestra')
 ============
 
 **TracktorLive** is a real-time video tracking and data serving
@@ -74,8 +74,9 @@ If you are already using a Linux system, you can run
 pip install tracktorlive
 ```
 
-For usage in other platforms, such as MacOS or Windows (through Windows
+For usage Windows (through Windows
 Subsystem for Linux, WSL) see [DOCS](./DOCS/).
+**We do not currently support TracktorLive for real-time use on MacOS.**
 
 ------------------------------------------------------------------------
 

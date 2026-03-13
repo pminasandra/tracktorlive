@@ -1,7 +1,7 @@
-TracktorLive v1.0.2 ('Clytemnestra')
+![TracktorLive](./assets/logo-with-text.png) v1.0.2 ('Clytemnestra')
 ============
 
-**TracktorLive** is a real-time video tracking and data serving
+**TracktorLive** is a real-time video tracking and response
 framework designed for lightweight, scriptable tracking of individual
 animals in behavioral experiments. It
 provides programmatic hooks for processing and responding to tracked data

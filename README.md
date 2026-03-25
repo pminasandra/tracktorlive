@@ -1,43 +1,28 @@
 ![TracktorLive](./.assets/logo-with-text.png) v1.0.2 ('Clytemnestra')
 ============
 
+[Repository](https://github.com/pminasandra/tracktorlive/) | 
+[Pre-print](https://doi.org/10.64898/2026.03.12.711471) |
+[Cassettes](https://github.com/pminasandra/tracktorlive/tree/master/Library_Of_Casettes) |
+[Docs](https://github.com/pminasandra/tracktorlive/tree/master/DOCS) |
+[Tutorials](https://github.com/pminasandra/tracktorlive/tree/master/tutorials)
+
 **TracktorLive** is a real-time video tracking and response
 framework designed for lightweight, scriptable tracking of individual
-animals in behavioral experiments. It
-provides programmatic hooks for processing and responding to tracked data
+animals in behavioral (potentially closed-loop) experiments. It
+provides programmatic hooks ('cassettes') for processing and responding to tracked data
 on-the-fly, with no interaction needed with actual computer vision code.
 
-The video tracking used in this project emerges from Tracktor::
+The video tracking used in this project emerges from Tracktor:
 
 **Sridhar, V. H., Roche, D. G., & Gingins, S. (2019).**
 _Tracktor: Image-based automated tracking of animal movement and behaviour._
 Methods in Ecology and Evolution, 10(6), 815–820.
 DOI:[10.1111/2041-210X.13166"](https://doi.org/10.1111/2041-210X.13166)
 
-TracktorLive builds on that work, enabling real-time
-tracking and response delivery.
-
 ------------------------------------------------------------------------
 
-✨ Features
-----------
-
--   Real-time tracking of 1 or more individuals from real-time camera feed or pre-recorded video
-    sources
--   Buffered data sharing via shared memory (suitable for high-speed
-    use)
--   Modular "cassette" system for on-the-fly processing
--   Built-in support for:
-    -   Data streaming to external clients
-    -   Live or on-demand video and data recording
--   A number of useful [tutorial scripts](tutorials/) and a growing [library of
-    cassettes](Library_Of_Casettes/README.md), through which even novice users
-    can quickly create and run scripts.
--   Minimal external dependencies (NumPy, OpenCV, Scikit-Learn etc.)
-
-------------------------------------------------------------------------
-
-🧠 Concept
+Concept
 ---------
 
 TracktorLive works on a **server--client model**, where:
@@ -63,24 +48,25 @@ idea for including a customGPT comes from [Dr. Aiswarya Prasad](https://aiswarya
 
 ------------------------------------------------------------------------
 
-📦 Installation
+Installation
 --------------
 
 TracktorLive is mainly targeted towards Linux-like environments. 
-However, it works (and has been tested) on MacOS and Windows.
+However, it works (and has been tested) on Windows, and in a limited role, on
+MacOS.
 If you are already using a Linux system, you can run
 
 ```bash
 pip install tracktorlive
 ```
 
-For usage Windows (through Windows
+For usage with Windows (through Windows
 Subsystem for Linux, WSL) see [DOCS](./DOCS/).
 **We do not currently support TracktorLive for real-time use on MacOS.**
 
 ------------------------------------------------------------------------
 
-🔁 Example: Print current location of animal
+Example: Print current location of animal
 ---------------------------------------------
 
 ```python
@@ -123,22 +109,30 @@ trl.run_trsession(server, semm, client)
 ```
 
 
-🧪 Real-world Use Cases
+Real-world Use Cases
 ----------------------
 
 We provide eight complete tutorials to demonstrate the capabilities of this
-software. See out [list of tutorials](tutorials/README.md) to know more.
+software. See our [list of tutorials](./tutorials/) to know more.
 
 While these are the uses we have explored so far, we encourage users to try more things. We have
 discussed as potential future applications, e.g., 3D tracking using 3 cameras,
 and camera control to select recording device based on individual's location.
 
+------------------------------------------------------------------------
 
-📬 Status
---------
+Internals
+----------
 
-TracktorLive is a still an evolving toolkit. APIs may change slightlly. You're
-encouraged to adapt parts for your own research or build wrappers that
-suit your workflow.
-
-For questions or bugs, feel free to open an issue or reach out directly.
+-   Real-time tracking of 1 or more individuals from real-time camera feed or pre-recorded video
+    sources
+-   Buffered data sharing via shared memory (suitable for high-speed
+    use)
+-   Modular "cassette" system for on-the-fly processing
+-   Built-in support for:
+    -   Data streaming to external clients
+    -   Live or on-demand video and data recording
+-   A number of useful [tutorial scripts](tutorials/) and a growing [library of
+    cassettes](Library_Of_Casettes/README.md), through which even novice users
+    can quickly create and run scripts.
+-   Minimal external dependencies (NumPy, OpenCV, Scikit-Learn etc.)

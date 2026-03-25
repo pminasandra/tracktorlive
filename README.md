@@ -1,13 +1,13 @@
 ![TracktorLive](./.assets/logo-with-text.png) v1.0.2 ('Clytemnestra')
 ============
 
-<span style="text-align: center;">
+<p align="center">
 [Repository](https://github.com/pminasandra/tracktorlive/) | 
 [Pre-print](https://doi.org/10.64898/2026.03.12.711471) |
 [Cassettes](https://github.com/pminasandra/tracktorlive/tree/master/Library_Of_Casettes) |
 [Docs](https://github.com/pminasandra/tracktorlive/tree/master/DOCS) |
 [Tutorials](https://github.com/pminasandra/tracktorlive/tree/master/tutorials)
-</span>
+</p>
 
 **TracktorLive** is a real-time video tracking and response
 framework designed for lightweight, scriptable tracking of individual

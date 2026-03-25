@@ -2,11 +2,11 @@
 ============
 
 <p align="center">
-[Repository](https://github.com/pminasandra/tracktorlive/) | 
-[Pre-print](https://doi.org/10.64898/2026.03.12.711471) |
-[Cassettes](https://github.com/pminasandra/tracktorlive/tree/master/Library_Of_Casettes) |
-[Docs](https://github.com/pminasandra/tracktorlive/tree/master/DOCS) |
-[Tutorials](https://github.com/pminasandra/tracktorlive/tree/master/tutorials)
+<a href="https://github.com/pminasandra/tracktorlive/">Repository</a> | 
+<a href="https://doi.org/10.64898/2026.03.12.711471">Pre-print</a> | 
+<a href="https://github.com/pminasandra/tracktorlive/tree/master/Library_Of_Casettes">Cassettes</a> | 
+<a href="https://github.com/pminasandra/tracktorlive/tree/master/DOCS">Docs</a> | 
+<a href="https://github.com/pminasandra/tracktorlive/tree/master/tutorials">Tutorials</a>
 </p>
 
 **TracktorLive** is a real-time video tracking and response

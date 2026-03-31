@@ -1,4 +1,9 @@
-![TracktorLive](./.assets/logo-with-text.png) v1.0.2 ('Clytemnestra')
+![TracktorLive](./.assets/logo-with-text.png)
+
+<p align="center">
+v1.0.2 ('Clytemnestra')
+</p>
+
 ============
 
 <p align="center">

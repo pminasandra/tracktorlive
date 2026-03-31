@@ -13,6 +13,12 @@ your installation, you need to use `python3` in place of `python`.
    python -m pip uninstall tracktorlive
    ```
 
+   Also remove any existing config files.
+
+   ```bash
+   rm ~/.trlrc
+   ```
+
 2. Clone this repository
 
    ```bash

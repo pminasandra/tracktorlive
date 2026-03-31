@@ -23,6 +23,7 @@ Here are all the cassettes available as of now.
 | [Extract Specified Frames](Extract_Specified_Frames/extract_specified_frames.md) | Saves as jpg all frames at specified indices |
 | [First Person Views](First_Person_Views/first_person_views.md) | For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual |
 | [Gaussian Blur](Gaussian_Blur/gaussian_blur.md) | Apply a Gaussian blur to each frame before tracking |
+| [Invert Frame](Invert_Frame/invert_frame.md) | Inverts incoming frames |
 | [Message Arduino](Message_Arduino/message_arduino.md) | When a user-defined function returns a character, transmits that character to a connected Arduino |
 | [Overlay Text From Df](Overlay_Text_From_Dataframe/overlay_text_from_dataframe.md) | Overlays user-provided frame-wise text on video |
 | [Preserve Frame](Preserve_Frame/preserve_frame.md) | Put non-edited frames in framesbuffer (useful for dumpvideo methods) |

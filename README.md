@@ -4,14 +4,15 @@
 v1.0.2 ('Clytemnestra')
 </p>
 
-============
+------------------------------------------------------------------------
 
 <p align="center">
 <a href="https://github.com/pminasandra/tracktorlive/">Repository</a> | 
 <a href="https://doi.org/10.64898/2026.03.12.711471">Pre-print</a> | 
 <a href="https://github.com/pminasandra/tracktorlive/tree/master/Library_Of_Casettes">Cassettes</a> | 
 <a href="https://github.com/pminasandra/tracktorlive/tree/master/DOCS">Docs</a> | 
-<a href="https://github.com/pminasandra/tracktorlive/tree/master/tutorials">Tutorials</a>
+<a href="https://github.com/pminasandra/tracktorlive/tree/master/tutorials">Tutorials</a> | 
+<a href="https://chatgpt.com/g/g-696e226d0d048191a9dc03b30cdb5427-tracktorlive-cassette-maker">customGPT</a>
 </p>
 
 **TracktorLive** is a real-time video tracking and response

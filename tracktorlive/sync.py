@@ -8,7 +8,6 @@ Synchronisation and semaphore management
 
 import multiprocessing as mp
 from multiprocessing.managers import BaseManager
-from multiprocessing.synchronize import Semaphore as SemType
 import socket
 import time
 

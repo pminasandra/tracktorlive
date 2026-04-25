@@ -49,7 +49,7 @@ def colour_to_thresh(frame, block_size = 31, offset = 25, blur=True,
 
     if blur:
         frame = cv2.blur(frame, (5,5))
-        
+
     block_size |= 1
 
     if invert:
@@ -138,7 +138,7 @@ def detect_and_draw_contours(frame, thresh, meas_last,
             i += 1
         else:
             contours = contours[:i] + contours[i+1:]
-            
+
     return final, contours, meas_last, meas_now
 
 def apply_k_means(contours, n_inds, meas_now):

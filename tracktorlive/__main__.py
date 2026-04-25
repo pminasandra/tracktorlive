@@ -1,6 +1,10 @@
 # tracktorlive/__main__.py
 # Pranav Minasandra
 
+"""
+Provides the script `tracktorlive`, the CLI associated with this python package.
+"""
+
 import argparse
 import json
 import os
@@ -26,12 +30,15 @@ def parse_resolution(res_string):
     match = re.fullmatch(r"\s*(\d+)\s*[x×]\s*(\d+)\s*", res_string)
     if not match:
         raise ValueError(f"Invalid resolution format: '{res_string}'")
-    
+
     width, height = map(int, match.groups())
     return width, height
 
 
 def run_gui(args):
+    """
+    Runs the GUI for setting parameters for tracktor
+    """
     cap = None
     vidtype = None
 
@@ -56,7 +63,13 @@ def run_gui(args):
             configdict=trl.paramfixing.load_config(args.out)
 
     cap = trl.trackutils.get_vid(cap)
-    params = trl.get_params_from_gui(cap, vidtype, initial_config=configdict, write_file=args.out, width=width, height=height)
+    params = trl.get_params_from_gui(cap,
+                            vidtype,
+                            initial_config=configdict,
+                            write_file=args.out,
+                            width=width,
+                            height=height
+                            )
     cap.release()
 
     if args.out is None:
@@ -64,6 +77,9 @@ def run_gui(args):
 
 
 def run_track(args):
+    """
+    Launches and executes a TracktorServer.
+    """
     with open(args.paramsfile) as f:
         params = json.load(f)
 
@@ -133,7 +149,7 @@ def run_track(args):
                 if key==27 or key==ord('q'):
                     server.show_flag = False
                     cv2.destroyWindow(wname)
-        
+
         @server.stopfunc
         def showcleanup(server):
             if server.show_flag:
@@ -144,6 +160,9 @@ def run_track(args):
 
 
 def run_clear(_):
+    """
+    Empties all feedfiles and client files
+    """
     feeds_dir = trl.FEEDS_DIR
     clients_dir = trl.CLIENTS_DIR
 
@@ -180,6 +199,9 @@ DOCS: {trl.__url__}/DOCS.md
 """
 
 def main():
+    """
+    Wrapper for all `tracktorlive` CLI subcommands.
+    """
     parser = argparse.ArgumentParser(
                                 prog="tracktorlive",
                                 description=tr_help,
@@ -192,7 +214,9 @@ def main():
     gui_parser.add_argument("--camera", "-c", help="Camera index", type=int)
     gui_parser.add_argument("--file", "-f", help="Video file path")
     gui_parser.add_argument("--out", "-o", help="Output JSON file path")
-    gui_parser.add_argument("--res", "-r", help="Video resolution, e.g., 640x480", default="640x480")
+    gui_parser.add_argument("--res", "-r",
+            help="Video resolution, e.g., 640x480",
+            default="640x480")
 
     # Track subcommand
     track_parser = subparsers.add_parser("track", help="Start a tracking server")
@@ -200,12 +224,31 @@ def main():
     track_parser.add_argument("--camera", "-c", help="Camera index", type=int)
     track_parser.add_argument("--file", "-f", help="Video file path")
     track_parser.add_argument("--feed-id", "-I", help="Feed ID", default=None)
-    track_parser.add_argument("--numtrack", "-n", help="Number of recorded individuals.", default=1, type=int)
-    track_parser.add_argument("--write-rec", "-w", help="Whether tracking should be output to a csv file", action='store_true')
-    track_parser.add_argument("--write-vid", "-d", help="Whether video should be recorded to a file", action='store_true')
-    track_parser.add_argument("--show-display", "-s", help="Whether tracking should be displayed", action='store_true')
-    track_parser.add_argument("--timeout", "-t", help="How many seconds before server should shut down", type=int)
-    track_parser.add_argument("--res", "-r", help="Video resolution, e.g., 640x480", default="640x480")
+    track_parser.add_argument("--numtrack",
+                                    "-n",
+                                    help="Number of recorded individuals.",
+                                    default=1,
+                                    type=int)
+    track_parser.add_argument("--write-rec",
+                                "-w",
+                                help="Whether tracking should be output to a csv file",
+                                action='store_true')
+    track_parser.add_argument("--write-vid",
+                                "-d",
+                                help="Whether video should be recorded to a file",
+                                action='store_true')
+    track_parser.add_argument("--show-display",
+                                "-s",
+                                help="Whether tracking should be displayed",
+                                action='store_true')
+    track_parser.add_argument("--timeout",
+                                "-t",
+                                help="How many seconds before server should shut down",
+                                type=int)
+    track_parser.add_argument("--res",
+                                "-r",
+                                help="Video resolution, e.g., 640x480",
+                                default="640x480")
 
     # Clear subcommand
     clear_parser = subparsers.add_parser("clear", help="Remove all feed/client files")

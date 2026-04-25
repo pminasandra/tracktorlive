@@ -7,16 +7,13 @@ provides class TracktorServer, for underlying tracking and dataserving needs
 """
 
 import glob
-import json
 import multiprocessing as mp
-import multiprocessing.shared_memory as mpshm
 from multiprocessing.managers import BaseManager
 
 import os
 from os.path import join as joinpath
 import pickle
 import random
-import socket
 import time
 import ulid
 
@@ -27,7 +24,6 @@ import tracktorlive
 from . import client
 from . import config
 from . import memorymanagement as mmg
-from . import paramfixing
 from . import sync
 from . import trackutils
 from . import videoout
@@ -41,7 +37,6 @@ def _runforever(server):
     server.cap = trackutils.get_vid(server.vidinput)
     server.cap.set(cv2.CAP_PROP_FRAME_WIDTH, server.width)
     server.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, server.height)
-    t_init = time.time()
     databuffer, clockbuffer = server.setup_shared_arrays()
     if server.write_video.value:
         server.vidout = server.setup_vidout()
@@ -152,15 +147,15 @@ class TracktorServer:
 #        self.meas_last = self.resmanager.list(self.meas_last)
 #        self.meas_now = self.resmanager.list(self.meas_now)
 
-        self.recorded_frames = [] 
-        self.recorded_points = [] 
-        self.recorded_times  = [] 
+        self.recorded_frames = []
+        self.recorded_points = []
+        self.recorded_times  = []
         cap_temp = cv2.VideoCapture(self.vidinput)
         cap_temp.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         cap_temp.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-        ret, frame = cap_temp.read()
+        _, frame = cap_temp.read()
         self.framesize = (int(frame.shape[1]*1.0),
-                            int(frame.shape[0]*1.0))# FIXME: scaling
+                            int(frame.shape[0]*1.0))
 
         if self.write_video.value:
             os.makedirs(self.feed_id, exist_ok=True)
@@ -185,19 +180,19 @@ class TracktorServer:
     def startfunc(self, f):
         """Registers a function to be called at start of tracking."""
 
-        assert callable(f), f"decorate only functions."
+        assert callable(f), "decorate only functions."
         self.atstart[f.__name__] = f
         return f
 
     def __call__(self, f):
         """Registers a per-frame processing function (called a 'cassette')."""
-        assert callable(f), f"decorate only functions."
+        assert callable(f), "decorate only functions."
         self.casettes[f.__name__] = f
         return f
 
     def stopfunc(self, f):
         """Registers a function to be called at stop of tracking."""
-        assert callable(f), f"decorate only functions."
+        assert callable(f), "decorate only functions."
         self.atstop[f.__name__] = f
         return f
 
@@ -260,7 +255,8 @@ class TracktorServer:
         """
 
         fourcc = cv2.VideoWriter_fourcc(*TracktorServer._codec)
-        self.vidfilename=joinpath(self.feed_id, str(ulid.ULID()) + "." + config.settings['file_format'])
+        self.vidfilename=joinpath(self.feed_id,
+                                str(ulid.ULID()) + "." + config.settings['file_format'])
         vidout = cv2.VideoWriter(
                                 filename=self.vidfilename,
                                 fourcc = fourcc,
@@ -272,7 +268,9 @@ class TracktorServer:
         return vidout
 
     def get_data_and_clock(self):
-        """Returns a copy of the current data and clock buffers, with thread-safe access."""
+        """
+        Returns a copy of the current data and clock buffers, with thread-safe access.
+        """
         self.semaphore.acquire()
         data = self.databuffer.copy()
         clock = self.clockbuffer.copy()
@@ -289,7 +287,10 @@ class TracktorServer:
                 )
 
     def _eachframe(self, cap, databuffer, clockbuffer):#tracking happens here
-        """Processes a single frame: tracking, updating shared buffers, and optionally recording or drawing."""
+        """
+        Processes a single frame: tracking, updating shared buffers, and optionally
+        recording or drawing.
+        """
         try:
             self.current_frame, self.frame_index = trackutils.get_frame(cap)
         except trackutils.VideoEndedError as e:
@@ -297,9 +298,8 @@ class TracktorServer:
                 # file completed
                 self.running.value = False
                 return None
-            else:
-                print(f"encountered inexplicable EOFERROR: {e}")
-                pass
+            print(f"encountered inexplicable EOFERROR: {e}")
+            pass
 
         for func in self.casettes:
             self.casettes[func](self)
@@ -338,13 +338,16 @@ class TracktorServer:
 
         databuffer[:,:,-1] = -1.0
         if len(self.meas_now) > 0:
-            databuffer[:len(self.meas_now[:self.n_ind]),:,-1] = self.meas_now[:self.n_ind]#if you found <= n_ind, fill those up. rest remain -1.0
+            databuffer[:len(self.meas_now[:self.n_ind]),:,-1] =\
+                        self.meas_now[:self.n_ind]
         self.framesbuffer[:-1] = self.framesbuffer[1:]
         self.framesbuffer[-1] = self.current_frame.copy()
 
         if self.keep_video.value:
             if len(self.recorded_frames) == 0:
-                self.recorded_frames.extend([fr for fr in self.framesbuffer if fr is not None])
+                self.recorded_frames.extend(
+                    [fr for fr in self.framesbuffer if fr is not None]
+                    )
             else:
                 self.recorded_frames.append(self.current_frame)
 
@@ -408,7 +411,10 @@ class TracktorServer:
             self.recout.close()
 
     def __del__(self):
-        """Final cleanup of feed metadata and shared memory when the server object is deleted."""
+        """
+        Final cleanup of feed metadata and shared memory when the server object is
+        deleted.
+        """
         os.remove(self.get_feed_filename())
         if self.running.value:
             self.stop()
@@ -475,7 +481,7 @@ def close_trserver(server, semm):
     try:
         server.stop()
     except (FileNotFoundError, KeyError) as e:
-        print(f"[WARN]: an SHM closing issue occured: {e}, but is likely safe to ignore.")
+        print(f"[WARN]: an SHM closing issue occured: {e}, but safe to ignore (?)")
         print("Run 'tracktorlive clear' to be safe.")
     semm.terminate()
     semm.join()
@@ -497,7 +503,8 @@ def run_trserver(server, semm):
 
 def wait_and_close_trserver(server, semm):
     """
-    Blocks until the server times out or is manually interrupted, then closes the server.
+    Blocks until the server times out or is manually interrupted, then closes the
+    server.
 
     Args:
         server (TracktorServer): The server instance.
@@ -527,7 +534,8 @@ def run_trsession(server, semm, clients=None):
     Args:
         server (TracktorServer): The tracking server instance.
         semm (multiprocessing.Process): The semaphore manager.
-        clients (TracktorClient or list[TracktorClient], optional): One or more clients connected to the server.
+        clients (TracktorClient or list[TracktorClient], optional): One or more clients
+        connected to the server.
 
     Returns:
         None
@@ -563,30 +571,3 @@ def run_trsession(server, semm, clients=None):
 
         # Stop server and semaphore
         close_trserver(server, semm)
-
-
-if __name__ == "__main__":
-    mp.set_start_method('fork')
-
-    video_directory = "/Users/vivekhsridhar/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/Python/OpenCV/tracktor"
-
-    vidinput = joinpath(video_directory, "videos", "fish_video.mp4")
-#    vidinput = 0
-    cap = cv2.VideoCapture(vidinput)
-
-    tune_gui = False
-    if tune_gui:
-        trackparams = paramfixing.gui_set_params(cap, "file", write_file=True)
-    else:
-        with open("params.json") as f:
-            trackparams = json.load(f)
-    trackparams["fps"] = cap.get(cv2.CAP_PROP_FPS)
-    cap.release()
-
-    server, semm = spawn_trserver(vidinput, trackparams,
-                            n_ind=2, realtime=False, draw=True,
-                            feed_id="trial")
-
-    run_trserver(server, semm)
-    wait_and_close_trserver(server, semm)
-    del server

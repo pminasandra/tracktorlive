@@ -4,28 +4,30 @@ Real-time low-cost animal tracking system.
 
 import multiprocessing as mp
 import sys
-
-if sys.platform == "darwin":
-    mp.set_start_method("fork")
-
 import json
 import os
 from os.path import join as joinpath
-import platformdirs as pfd
 import pathlib
+
+import platformdirs as pfd
+
 from . import config
 
 config_file = pathlib.Path.home()/".trlrc"
 if not config_file.exists():
-    print("rc file could not be found. This may happen if it is your first time running tracktorlive. Creating one for you at", str(config_file))
+    print("rc file could not be found.\
+This may happen if it is your first time running tracktorlive.\
+Creating one for you at", str(config_file))
     with open(config_file, "w") as f:
         json.dump(config.settings, f, indent=2)
 
 with open(config_file) as f:
     rcParams = json.load(f)
 
-from .server import TracktorServer, spawn_trserver, run_trserver, close_trserver, wait_and_close_trserver, run_trsession
-from .client import TracktorClient, spawn_trclient, run_trclient, close_trclient, wait_and_close_trclient, list_feeds
+from .server import TracktorServer, spawn_trserver, run_trserver
+from .server import close_trserver, wait_and_close_trserver, run_trsession
+from .client import TracktorClient, spawn_trclient, run_trclient
+from .client import close_trclient, wait_and_close_trclient, list_feeds
 from .paramfixing import gui_set_params as get_params_from_gui
 
 __version__ = "1.0.2 ('Clytemnestra')"
@@ -53,4 +55,3 @@ os.makedirs(FEEDS_DIR, exist_ok=True)
 os.makedirs(CLIENTS_DIR, exist_ok=True)
 #Miscellaneous
 SUPPRESS_INFORMATIVE_PRINT = False
-

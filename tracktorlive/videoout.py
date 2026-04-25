@@ -2,6 +2,10 @@
 # 24 Apr 2025
 # pminasandra.github.io
 
+"""
+Methods to save video data in a parallel process.
+"""
+
 import multiprocessing as mp
 
 import cv2

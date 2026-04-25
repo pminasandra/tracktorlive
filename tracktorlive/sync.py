@@ -26,6 +26,9 @@ def _make_named_sem(name):
 SyncManager.register('get_semaphore', callable=_make_named_sem)
 
 def run_semaphore_server(port_num):
+    """
+    Makes the server willing to dispatch semaphores.
+    """
     manager = SyncManager(address=(ADDR, port_num), authkey=b'secret')
     s = manager.get_server()
     try:
@@ -34,11 +37,17 @@ def run_semaphore_server(port_num):
         s.stop()
 
 def prl_sem_server(port_num):
+    """
+    Runs the semaphore manager in parallel
+    """
     serverproc = mp.Process(target=run_semaphore_server, args=(port_num,))
     serverproc.start()
     return serverproc
 
 def wait_for_server(address, timeout=5.0):
+    """
+    Wait until the semaphore manager comes online, with a timeout.
+    """
     host, port = address
     deadline = time.time() + timeout
     while time.time() < deadline:

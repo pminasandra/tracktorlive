@@ -23,7 +23,8 @@ import numpy as np
 import tracktorlive
 from . import sync
 
-class SyncManager(BaseManager): pass
+class SyncManager(BaseManager):
+    pass
 SyncManager.register('get_semaphore')
 
 def _runforever(obj):
@@ -52,6 +53,10 @@ def _runforever(obj):
         obj.atstop[func](data, clock)
 
 class TracktorClient:
+    """
+    Class TracktorClient, performs actions in response to tracking from
+    server.TracktorServer.
+    """
 
     def __init__(self, feed_id, run_interval=None):
         """
@@ -100,7 +105,7 @@ class TracktorClient:
                     (
                         self.n_ind, #number of individuals as row
                         2, # x, y
-                        int(self.fps * self.buffer_size) # number of tracked frames' data in the buffer
+                        int(self.fps * self.buffer_size)
                     ),
                     dtype=np.float64,
                     buffer = self.datashm.buf
@@ -124,30 +129,37 @@ class TracktorClient:
         return f
 
     def startfunc(self, f):
+        """Decorator: cassette called at start"""
         assert callable(f), "decorate only functions."
         self.atstart[f.__name__] = f
         return f
 
     def stopfunc(self, f):
+        """Decorator: cassette called at stop"""
         assert callable(f), "decorate only functions."
         self.atstop[f.__name__] = f
         return f
 
     def get_feed_filename(self):
+        """Get feedfile for current feed"""
         return joinpath(tracktorlive.FEEDS_DIR, f"tlfeed-{self.feed_id}")
 
     def get_client_filename(self):
+        """Get feedfile for current client data"""
         return joinpath(tracktorlive.CLIENTS_DIR, f"tlclient-{self.feed_id}-{self.client_id}")
 
     def make_client_file(self):
+        """Create a client file"""
         with open(self.clientfile, "a") as f:
             pass
 
     def load_feed_info(self):
+        """Load data about the feed provided by feedfile"""
         with open(self.get_feed_filename(), "rb") as f:
             return pickle.load(f)
 
     def get_data_and_clock(self):
+        """Semaphore protected acquire data and clock from server"""
         self.semaphore.acquire()
         data = self.dataq.copy()
         clock = self.clockq.copy()
@@ -157,7 +169,7 @@ class TracktorClient:
     def _eachiter(self):
         try:
             data, clock = self.get_data_and_clock()
-            if clock[-1] > -1.0-1e-8 and clock[-1] < -1.0 + 1e-8:#FIXME
+            if clock[-1] > -1.0-1e-8 and clock[-1] < -1.0 + 1e-8:#
                 self.running.value = False
             else:
                 for funcname in self.casettes:
@@ -183,7 +195,7 @@ class TracktorClient:
         #self.clientproc.terminate()
         self.clientproc.join()
         self.clientproc.close()
-        
+
     def __del__(self):
         if self.running.value:
             self.stop()
@@ -261,15 +273,3 @@ def wait_and_close_trclient(client):
         print("Terminating client.")
     finally:
         client.stop()
-
-
-if __name__ == "__main__":
-
-    client = spawn_trclient("trial")
-
-    @client
-    def printstuff(data, clock):
-        print(clock[-1], data[:,:,-1])
-
-    run_trclient(client)
-    del client

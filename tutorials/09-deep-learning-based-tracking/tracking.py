@@ -22,12 +22,14 @@ server, semm = trl.spawn_trserver(VIDEO,
                             buffer_size=0.3,
                             feed_id="Ball tracker",
                             draw=True,
-                            internal_tracking=False,
+                            internal_tracking=False,# <- PAY ATTENTION TO THIS FLAG!
                             realtime=False,
                             write_video=True)
 
+## This is the rectangle we are interested in.
 TOP_LEFT = (1200, 180)
 BOTTOM_RIGHT = (1450, 320)
+## When the ball is brought into this pixel region, a simple 'action' is triggered.
 
 # CASSETTE BEGINS: ZONE_ALERT_OVERLAY
 # DESCRIPTION: Draws a black warning box with a red "!" when any tracked object
@@ -41,7 +43,7 @@ zone_alert_BOTTOM_RIGHT = BOTTOM_RIGHT  # (x, y)
 zone_alert_BOX_TOP_LEFT = (135, 135)
 zone_alert_BOX_BOTTOM_RIGHT = (335, 335)
 
-@server.atstart
+@server.startfunc
 def zone_alert_overlay_begin(server):
     server.not_in_area = True
 
@@ -79,7 +81,7 @@ def zone_alert_overlay(server):
         thickness=-1,
     )
 
-    cv2.putText(
+    cv2.putText(#Draw a "!" symbol when ball is in the designated zone.
         zone_alert_frame,
         "!",
         (195, 310),
@@ -102,7 +104,7 @@ DRAW_ZONE_RECTANGLE_ALPHA = 0.4
 
 @server
 def draw_zone_rectangle(server):
-    col = (0, 255, 0) if server.not_in_area else (0, 0, 255)
+    col = (0, 255, 0) if server.not_in_area else (0, 0, 255) #red if ball in region.
     draw_zone_rectangle_overlay = server.current_frame.copy()
 
     cv2.rectangle(
@@ -124,6 +126,12 @@ def draw_zone_rectangle(server):
 
 # CASSETTE ENDS: DRAW_ZONE_RECTANGLE
 
+
+## NOTE: The below cassette is the crucial part of the script.
+## It replicates a significant chunk of TracktorServer._eachframe, as the
+## option `internal_tracking=False` from earlier overrides all of that.
+## Pay attention to all steps followed, and make sure you do those if you
+## are incorporating your own tracking solution with TracktorLive.
 
 # CASSETTE BEGINS: YOLO_TRACKING_SINGLE_OBJECT
 # DESCRIPTION: !!CORE TRACKER!! Replaces Tracktor tracking with YOLO and ByteTracker

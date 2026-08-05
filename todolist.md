@@ -32,3 +32,5 @@
 - [ ] keepvideo should write video files to disk whenever data exceeds a certain
   size.
 - [ ] same above for keepdata, but more reasonably.
+- [ ] tutorial for disabled internal tracking usage
+- [ ] tutorial for LLM usage

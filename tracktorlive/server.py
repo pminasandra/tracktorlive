@@ -62,6 +62,7 @@ def _runforever(server):
         server.atstop[func](server)
 
     server.cap.release()
+    server.clear_server()
 
 
 class TracktorServer:
@@ -100,6 +101,7 @@ class TracktorServer:
         else:
             self.feed_id = feed_id
         self.buffer_size = buffer_size
+        self.clients_dir = str(tracktorlive.CLIENTS_DIR)
         self.internal_tracking = internal_tracking
         self.keep_recordings = mp.Value('b', keep_recordings)
         self.keep_video = mp.Value('b', keep_video)
@@ -140,6 +142,7 @@ class TracktorServer:
             self.vid_source_type = "file"
 
         self.create_feed_file()
+        self.feed_file = self.get_feed_filename()
         self.atstart = {}
         self.casettes = {}
         self.atstop = {}
@@ -283,7 +286,7 @@ class TracktorServer:
     def get_clients(self):
         """Returns a list of client files currently connected to this feed."""
         return glob.glob(
-                joinpath(tracktorlive.CLIENTS_DIR,
+                joinpath(self.clients_dir,
                             f"tlclient-{self.feed_id}-*"
                         )
                 )
@@ -413,12 +416,13 @@ class TracktorServer:
         if self.write_recordings.value:
             self.recout.close()
 
-    def __del__(self):
+    def clear_server(self):
         """
         Final cleanup of feed metadata and shared memory when the server object is
         deleted.
         """
-        os.remove(self.get_feed_filename())
+        if os.path.exists(self.feed_file):
+            os.remove(self.feed_file)
         if self.running.value:
             self.stop()
             time.sleep(0.001)
@@ -436,6 +440,9 @@ class TracktorServer:
         while len(self.get_clients()) > 0 and time.time() - t_close < 5.0:
             time.sleep(0.01)
             pass
+
+#    def __del__(self):
+#        self.clear_server()
 
 
 def spawn_trserver(vidinput, params, n_ind=1, **kwargs):

@@ -68,7 +68,7 @@ connected, in your terminal, you can use:
     You can now simply run:
 
     ```bash
-    tracktorlive track --file video.mp4 --num-track 5 --write-rec params.json
+    tracktorlive track --file video.mp4 --numtrack 5 --write-rec params.json
     ```
 
     and the five animals will be tracked, and their outputs will be saved to a

@@ -48,9 +48,16 @@ def _runforever(obj):
             break
 
     # Run stop casettes
-    data, clock = obj.get_data_and_clock()
-    for func in obj.atstop:
-        obj.atstop[func](data, clock)
+    try:
+        data, clock = obj.get_data_and_clock()
+    except ConnectionResetError:
+        pass
+    except KeyboardInterrupt:
+        obj.running.value=False
+        pass
+    finally:
+        for func in obj.atstop:
+            obj.atstop[func](data, clock)
 
 class TracktorClient:
     """

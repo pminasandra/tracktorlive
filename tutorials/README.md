@@ -48,6 +48,9 @@ arduino boards and delivering tracking-based stimuli. While stimulus delivery is
 one of the key requirements for which TracktorLive was built, it also goes
 through other powerful functionalities where it controls the video feed. These
 are covered in Tutorials 7 and 8.
+Finally, Tutorials 9 and 10 tell more advanced users how to replace the
+internal tracking system of TracktorLive with another tracker, or use an LLM to
+respond directly to visual information in the frame.
 
 1. [Recording a video](./01-recording-video/): Use TracktorLive to record
    a simple 10 minute video from the command line.
@@ -67,6 +70,12 @@ are covered in Tutorials 7 and 8.
 8. [Video centering'](./08-video-registration/): With a python script,
    extract cropped videos providing a top-down chasing view following each
    individual.
+9. [Deep-Learning-based tracking](./09-deep-learning-based-tracking): With
+   a python script, track individuals using the popular YOLO deep-learning
+   framework within TracktorLive.
+10. [Integrating an LLM](./10-integrating-an-llm): Use a Large Language Model to
+    detect the presence of certain animals in a video frame, and respond to
+    those animals.
 
 We also have [further demonstrations](./further-tutorials/), and are glad to see
 submissions from our users to be included here.

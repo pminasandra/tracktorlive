@@ -30,7 +30,7 @@ more effectively detect simulated objects, more accurately representing
 a situation where added video processing is needed prior to tracking. The server
 also wrote tracked locations to a CSV file on-the-fly. For benchmarking, we used
 the [Benchmark
-Server](../Library_Of_Casettes/Benchmark_Server/benchmark-server.md) cassette.
+Server](../Library_Of_Casettes/Benchmark_Server/benchmark_server.md) cassette.
 
 The simulated video input of the server was presented through the linux tool
 `v4l2loopback`, which allowed a video input to be presented as if arriving through

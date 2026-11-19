@@ -62,6 +62,7 @@ def _runforever(server):
         server.atstop[func](server)
 
     server.cap.release()
+    server.clear_server()
 
 
 class TracktorServer:
@@ -78,6 +79,7 @@ class TracktorServer:
                     buffer_size=10,#seconds
                     draw=False,
                     feed_id=None,
+                    internal_tracking=True,
                     keep_recordings=False,
                     keep_video=False,
                     port_num=281197,
@@ -99,6 +101,8 @@ class TracktorServer:
         else:
             self.feed_id = feed_id
         self.buffer_size = buffer_size
+        self.clients_dir = str(tracktorlive.CLIENTS_DIR)
+        self.internal_tracking = internal_tracking
         self.keep_recordings = mp.Value('b', keep_recordings)
         self.keep_video = mp.Value('b', keep_video)
         self.n_ind = n_ind
@@ -138,6 +142,7 @@ class TracktorServer:
             self.vid_source_type = "file"
 
         self.create_feed_file()
+        self.feed_file = self.get_feed_filename()
         self.atstart = {}
         self.casettes = {}
         self.atstop = {}
@@ -281,7 +286,7 @@ class TracktorServer:
     def get_clients(self):
         """Returns a list of client files currently connected to this feed."""
         return glob.glob(
-                joinpath(tracktorlive.CLIENTS_DIR,
+                joinpath(self.clients_dir,
                             f"tlclient-{self.feed_id}-*"
                         )
                 )
@@ -304,71 +309,72 @@ class TracktorServer:
         for func in self.casettes:
             self.casettes[func](self)
 
-        self.current_frame, contours,\
-            self.meas_last, self.meas_now = trackutils.get_contours(
-                                            frame=self.current_frame,
-                                            meas_last=self.meas_last,
-                                            meas_now=self.meas_now,
-                                            scaling=1.0,#FIXME
-                                            draw_contours=self.draw,
-                                            **self.params
-                                        )
+        if self.internal_tracking:
+            self.current_frame, contours,\
+                self.meas_last, self.meas_now = trackutils.get_contours(
+                                                frame=self.current_frame,
+                                                meas_last=self.meas_last,
+                                                meas_now=self.meas_now,
+                                                scaling=1.0,#FIXME
+                                                draw_contours=self.draw,
+                                                **self.params
+                                            )
 
-        self.current_frame, self.meas_now = trackutils.cleanup_centroids(
-                                    self.current_frame,
-                                    contours,
-                                    n_inds=self.n_ind,
-                                    meas_last=self.meas_last,
-                                    meas_now=self.meas_now,
-                                    mot=self.n_ind>1,
-                                    frame_index=self.frame_index,
-                                    draw_circles=self.draw,
-                                    use_kmeans=self.use_kmeans
-                                )
+            self.current_frame, self.meas_now = trackutils.cleanup_centroids(
+                                        self.current_frame,
+                                        contours,
+                                        n_inds=self.n_ind,
+                                        meas_last=self.meas_last,
+                                        meas_now=self.meas_now,
+                                        mot=self.n_ind>1,
+                                        frame_index=self.frame_index,
+                                        draw_circles=self.draw,
+                                        use_kmeans=self.use_kmeans
+                                    )
 
-        self.semaphore.acquire()
+            self.semaphore.acquire()
 
-        databuffer[:,:,:-1] = databuffer[:,:,1:]
-        clockbuffer[:-1] = clockbuffer[1:]
+            databuffer[:,:,:-1] = databuffer[:,:,1:]
+            clockbuffer[:-1] = clockbuffer[1:]
 
-        if self.vid_source_type == "cam":
-            clockbuffer[-1] = time.time() - self.t_init
-        else:
-            clockbuffer[-1] = self.frame_index/self.fps
-
-        databuffer[:,:,-1] = -1.0
-        if len(self.meas_now) > 0:
-            databuffer[:len(self.meas_now[:self.n_ind]),:,-1] =\
-                        self.meas_now[:self.n_ind]
-        self.framesbuffer[:-1] = self.framesbuffer[1:]
-        self.framesbuffer[-1] = self.current_frame.copy()
-
-        if self.keep_video.value:
-            if len(self.recorded_frames) == 0:
-                self.recorded_frames.extend(
-                    [fr for fr in self.framesbuffer if fr is not None]
-                    )
+            if self.vid_source_type == "cam":
+                clockbuffer[-1] = time.time() - self.t_init
             else:
-                self.recorded_frames.append(self.current_frame)
+                clockbuffer[-1] = self.frame_index/self.fps
 
-        if self.keep_recordings.value:
-            if len(self.recorded_points) == 0:
-                self.recorded_points.extend(list(self.databuffer))
-                self.recorded_times.extend(list(self.clockbuffer))
-            else:
-                self.recorded_points.append(self.databuffer[:,:,-1])
-                self.recorded_times.append(self.clockbuffer[-1])
+            databuffer[:,:,-1] = -1.0
+            if len(self.meas_now) > 0:
+                databuffer[:len(self.meas_now[:self.n_ind]),:,-1] =\
+                            self.meas_now[:self.n_ind]
+            self.framesbuffer[:-1] = self.framesbuffer[1:]
+            self.framesbuffer[-1] = self.current_frame.copy()
+
+            if self.keep_video.value:
+                if len(self.recorded_frames) == 0:
+                    self.recorded_frames.extend(
+                            [fr for fr in self.framesbuffer if fr is not None]
+                        )
+                else:
+                    self.recorded_frames.append(self.current_frame)
+
+            if self.keep_recordings.value:
+                if len(self.recorded_points) == 0:
+                    self.recorded_points.extend(list(self.databuffer))
+                    self.recorded_times.extend(list(self.clockbuffer))
+                else:
+                    self.recorded_points.append(self.databuffer[:,:,-1])
+                    self.recorded_times.append(self.clockbuffer[-1])
 
 
-        if self.write_video.value:
-            self.vidout.write(self.current_frame)
+            if self.write_video.value:
+                self.vidout.write(self.current_frame)
 
-        if self.write_recordings.value:
-            entry=[clockbuffer[-1]]
-            entry.extend(list(databuffer.copy()[:,:,-1].reshape(2*self.n_ind)))
-            entry=[str(x) for x in entry]
-            print(",".join(entry), file=self.recout, flush=True)
-        self.semaphore.release()
+            if self.write_recordings.value:
+                entry=[clockbuffer[-1]]
+                entry.extend(list(databuffer.copy()[:,:,-1].reshape(2*self.n_ind)))
+                entry=[str(x) for x in entry]
+                print(",".join(entry), file=self.recout, flush=True)
+            self.semaphore.release()
 
     def dumpvideo(self, outfile=None, codec=_codec):
         """Writes recorded video frames to file, if recording was enabled."""
@@ -410,12 +416,13 @@ class TracktorServer:
         if self.write_recordings.value:
             self.recout.close()
 
-    def __del__(self):
+    def clear_server(self):
         """
         Final cleanup of feed metadata and shared memory when the server object is
         deleted.
         """
-        os.remove(self.get_feed_filename())
+        if os.path.exists(self.feed_file):
+            os.remove(self.feed_file)
         if self.running.value:
             self.stop()
             time.sleep(0.001)
@@ -433,6 +440,9 @@ class TracktorServer:
         while len(self.get_clients()) > 0 and time.time() - t_close < 5.0:
             time.sleep(0.01)
             pass
+
+#    def __del__(self):
+#        self.clear_server()
 
 
 def spawn_trserver(vidinput, params, n_ind=1, **kwargs):

@@ -1,7 +1,7 @@
 ![TracktorLive](./.assets/logo-with-text.png)
 
 <p align="center">
-v1.0.2 ('Clytemnestra')
+v2.0.0 ('Diogenes')
 </p>
 
 ------------------------------------------------------------------------

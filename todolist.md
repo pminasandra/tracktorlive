@@ -13,8 +13,8 @@
 - [x] Write `recorder.py` `chunker.py` and `startler.py` in examples directory
 - [ ] automatic detection of "file" vs "cam" and fps, and set server.realtime
   automatically.
-- [ ] output file names based on the input filenames, and other global params
-  brought to beginning + example cleaup
+- [ ] ~output file names based on the input filenames, and other global params
+  brought to beginning + example cleaup~
 - [x] paramfixing.py: write_file change from bool to str, and if it is None,
   sensibly get a new name.
 - [x] video file-format and codec handling in write_video and dumpvideo
@@ -32,5 +32,5 @@
 - [ ] keepvideo should write video files to disk whenever data exceeds a certain
   size.
 - [ ] same above for keepdata, but more reasonably.
-- [ ] tutorial for disabled internal tracking usage
-- [ ] tutorial for LLM usage
+- [x] tutorial for disabled internal tracking usage
+- [x] tutorial for LLM usage

@@ -10,6 +10,7 @@ Here are all the cassettes available as of now.
 | [Also Preserve Audio](Also_Preserve_Audio/also_preserve_audio.md) | Extract audio from input video and muxes it into the output video at the end |
 | [Also Record Audio](Also_Record_Audio/also_record_audio.md) | Record audio with ffmpeg in a separate process and muxes it into the recorded video at the end |
 | [Background Subtract](Background_Subtract/background-subtract.md) | Replace background pixels with white using an averaged background image |
+| [Benchmark Server](Benchmark_Server/benchmark_server.md) | Low-overhead, interval-based server benchmarking |
 | [Boost Contrast](Boost_Contrast/boost_contrast.md) | Brightness and contrast control |
 | [Channel Select](Channel_Select/channel_select.md) | Preserves only one of the BGR channels |
 | [Color Select](Color_Select/color_select.md) | Keep only pixels close to a user-defined BGR color; mask out everything else |
@@ -24,6 +25,7 @@ Here are all the cassettes available as of now.
 | [First Person Views](First_Person_Views/first_person_views.md) | For each tracked individual, crop a fixed-size square that is rotated so the animal’s heading points “up”. Uses EMA + rate limiting to smooth orientation. Writes one MP4 per individual |
 | [Gaussian Blur](Gaussian_Blur/gaussian_blur.md) | Apply a Gaussian blur to each frame before tracking |
 | [Invert Frame](Invert_Frame/invert_frame.md) | Inverts incoming frames |
+| [Llm Use, Detect](LLM_Use_Detect/llm-use-detect.md) | Uses a locally run LLM to analyse current frame |
 | [Message Arduino](Message_Arduino/message_arduino.md) | When a user-defined function returns a character, transmits that character to a connected Arduino |
 | [Overlay Text From Df](Overlay_Text_From_Dataframe/overlay_text_from_dataframe.md) | Overlays user-provided frame-wise text on video |
 | [Preserve Frame](Preserve_Frame/preserve_frame.md) | Put non-edited frames in framesbuffer (useful for dumpvideo methods) |
@@ -34,5 +36,6 @@ Here are all the cassettes available as of now.
 | [Time Lapse](Time_Lapse/time_lapse.md) | Build a time-lapse by subsampling frames into a custom buffer and writing once at the end |
 | [Timesync](Timesync/timesync.md) | Creates a parquet file of time.time() clock, useful for ms level sync |
 | [Update Plot](Update_plot/update_plot.md) | Displays (and saves) a plot every few seconds. Useful to monitor data in real time |
+| [Yolo Server Tracking](YOLO_Server_Tracking/YOLO_server_tracking.md) | Replaces Tracktor-based internal tracking with YOLO (given a .pt file) |
 
 ## Contributing Cassettes

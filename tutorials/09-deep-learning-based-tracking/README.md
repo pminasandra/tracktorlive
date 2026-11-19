@@ -40,7 +40,7 @@ and the .pt file is provided in this folder.
 
 ## Method
 
-The script for understanding this file is `main.py`. Two key changes from
+The script for understanding this tutorial is `main.py`. Two key changes from
 previous tutorials are needed:
 
 1. The server is now initiated with the additional argument,

@@ -23,7 +23,7 @@ recordings when capuchin monkeys were present in line-of-sight.
 
 ## Method
 
-The script for understanding this file is `monkey_detector.py`. As in [Tutorial
+The script for understanding this tutorial is `monkey_detector.py`. As in [Tutorial
 9](../09-deep-learning-based-tracking), we initialise the server with the
 argument `internal_tracking=False`. This is because we are not really tracking
 the monkeys that appear in this video.
@@ -57,7 +57,7 @@ need any annotated bounding-boxes for the system to identify what a capuchin
 monkey was. Incidentally, more complex prompts, for example asking if the monkey
 were performing a certain behaviour, are also possible. LLMs even grant the
 ability to be more vague, for example saying "does this frame show anything
-unusual", to only see rare sightings and rare behaviours.
+unusual", to only see rare sightings and rare behaviours. 
 
 The ability of vision-capable LLMs varies significantly. The
 [SmolVLM](https://huggingface.co/blog/smolvlm) family has been demonstrated on
@@ -65,7 +65,8 @@ Raspberry Pi devices, and can thus prove useful for field deployments, or
 parallel monitoring of wide areas. More complex models, such as the [Qwen
 VL](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) have been shown to detect
 scene context from multiple frames, and may be useful for identifying rare
-behaviours or specific interactions between animals.
+behaviours or specific interactions between animals. Experimenting with
+different open-weights models is recommended before deciding which one to use.
 
 Finally, we note that LLM behaviour varies significantly between trials, and
 LLMs parse prompts differently and can vary in performance based on the tone and

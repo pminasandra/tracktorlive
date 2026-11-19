@@ -25,7 +25,7 @@ $\ge$ 2s, and logs such events to a csv file. See `tracker_server.py` and
 Additionally, a delay of 0.3 seconds was added to both cassettes as an
 additional stand-in for various ‘blocking’ tasks, i.e., tasks that do not allow
 the program to proceed until they are completed. The server itself also used the
-[Color Select](../Library_Of_Casettes/Color_Select/color-select.md) cassette to
+[Color Select](../Library_Of_Casettes/Color_Select/color_select.md) cassette to
 more effectively detect simulated objects, more accurately representing
 a situation where added video processing is needed prior to tracking. The server
 also wrote tracked locations to a CSV file on-the-fly. For benchmarking, we used
